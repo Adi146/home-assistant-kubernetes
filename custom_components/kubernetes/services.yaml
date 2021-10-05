@@ -1,0 +1,55 @@
+set_unschedulable:
+  name: Set node unschedulable
+  description: Set unschedulable of a node
+  target:
+    entity:
+      integration: kubernetes
+      device_class: Node
+  fields:
+    unschedulable:
+      name: Unschedulable
+      description: unschedulable nodes will drain all pods
+      example: true
+      required: true
+      selector:
+        boolean:
+set_image_deployment:
+  name: Set deployment image
+  description: Set image of a deployment
+  target:
+    entity:
+      integration: kubernetes
+      device_class: Deployment
+  fields:
+    container:
+      name: Name of the container
+      example: homeassistant-container
+      required: true
+      selector:
+        text:
+    image:
+      name: Name of the new image
+      example: homeassistant/home-assistant:latest
+      required: true
+      selector:
+        text:
+set_image_daemon_set:
+  name: Set daemon set image
+  description: Set image of a daemon set
+  target:
+    entity:
+      integration: kubernetes
+      device_class: DaemonSet
+  fields:
+    container:
+      name: Name of the container
+      example: homeassistant-container
+      required: true
+      selector:
+        text:
+    image:
+      name: Name of the new image
+      example: homeassistant/home-assistant:latest
+      required: true
+      selector:
+        text:
