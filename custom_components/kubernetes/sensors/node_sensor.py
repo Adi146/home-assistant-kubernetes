@@ -10,7 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import config_validation as cv, entity_platform
 
-from .const import (
+from ..const import (
     DOMAIN,
     SERVICE_SET_UNSCHEDULABLE,
     PARAM_UNSCHEDULABLE,
@@ -19,7 +19,7 @@ from .const import (
     KUBERNETES_KIND_NODE,
 )
 
-from .kubernetes_entity import KubernetesEntity, async_cleanup_registry
+from ..kubernetes_entity import KubernetesEntity, async_cleanup_registry
 
 _LOGGER = logging.getLogger(__name__)
 

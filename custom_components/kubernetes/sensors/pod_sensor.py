@@ -10,8 +10,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import config_validation as cv, entity_platform
 
-from .const import DOMAIN, KUBERNETES_KIND_POD
-from .kubernetes_entity import KubernetesEntity, async_cleanup_registry
+from ..const import DOMAIN, KUBERNETES_KIND_POD
+from ..kubernetes_entity import KubernetesEntity, async_cleanup_registry
 
 _LOGGER = logging.getLogger(__name__)
 
