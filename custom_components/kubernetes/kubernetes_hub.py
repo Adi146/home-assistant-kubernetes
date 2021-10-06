@@ -8,7 +8,12 @@ from homeassistant.core import HomeAssistant
 
 from kubernetes_asyncio import client, config, watch
 
-from .const import CONF_FILE, SERVICE_SET_IMAGE_DEPLOYMENT
+from .const import (
+    CONF_FILE,
+    SERVICE_SET_IMAGE_DEPLOYMENT,
+    KUBERNETES_KIND_DEPLOYMENT,
+    KUBERNETES_KIND_DAEMONSET,
+)
 from .kubernetes_entity import KubernetesEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -105,13 +110,13 @@ class KubernetesHub:
             },
         }
 
-        if entity.getData().kind == "Deployment":
+        if entity.getData().kind == KUBERNETES_KIND_DEPLOYMENT:
             await self.apps_v1.patch_namespaced_deployment(
                 entity.getData().metadata.name,
                 entity.getData().metadata.namespace,
                 body,
             )
-        elif entity.getData().kind == "DaemonSet":
+        elif entity.getData().kind == KUBERNETES_KIND_DAEMONSET:
             await self.apps_v1.patch_namespaced_daemon_set(
                 entity.getData().metadata.name,
                 entity.getData().metadata.namespace,

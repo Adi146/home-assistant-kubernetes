@@ -3,9 +3,13 @@ from __future__ import annotations
 
 import logging
 
-from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.entity_registry import (
+    async_get_registry,
+    async_entries_for_config_entry,
+)
 
 from .kubernetes_hub import KubernetesHub
 

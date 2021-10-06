@@ -15,8 +15,9 @@ from .const import (
     SERVICE_SET_IMAGE_DAEMONSET,
     PARAM_CONTAINER,
     PARAM_IMAGE,
+    KUBERNETES_KIND_DAEMONSET,
 )
-from .kubernetes_entity import KubernetesEntity
+from .kubernetes_entity import KubernetesEntity, async_cleanup_registry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,6 +30,11 @@ async def async_setup_entry(
     platform = entity_platform.async_get_current_platform()
 
     hub = hass.data[DOMAIN][entry.entry_id]
+
+    await async_cleanup_registry(
+        hass, entry, KUBERNETES_KIND_DAEMONSET, hub.list_daemon_sets_func()
+    )
+
     await hub.async_start_listener(
         async_add_entities, hub.list_daemon_sets_func(), DaemonSetSensor
     )
