@@ -57,15 +57,6 @@ class DaemonSetSensor(KubernetesEntity, SensorEntity):
     def state(self) -> str:
         return f"{self.getData().status.number_ready}/{self.getData().status.current_number_scheduled}"
 
-    @property
-    def extra_state_attributes(self) -> dict:
-        attributes = super().extra_state_attributes
-
-        for container in self.getData().spec.template.spec.containers:
-            attributes[container.name] = container.image
-
-        return attributes
-
     async def set_image(self, container: str, image: str) -> None:
         await self.hub.set_image(
             self,

@@ -35,11 +35,3 @@ class PodSensor(KubernetesEntity, SensorEntity):
     @property
     def state(self) -> str:
         return self.getData().status.phase
-
-    @property
-    def extra_state_attributes(self) -> dict:
-        attributes = super().extra_state_attributes
-
-        attributes["nodeName"] = self.getData().spec.node_name
-
-        return attributes

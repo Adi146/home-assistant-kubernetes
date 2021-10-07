@@ -30,6 +30,26 @@ async def async_cleanup_registry(
                 registry.async_remove(entity.entity_id)
 
 
+def obj_to_dict(obj):
+    res = obj
+
+    if hasattr(obj, "attribute_map"):
+        res = {}
+        for attribute_key in obj.attribute_map:
+            attr = getattr(obj, attribute_key)
+            res[attribute_key] = obj_to_dict(attr)
+    if isinstance(obj, dict):
+        res = {}
+        for key, val in obj.items():
+            res[key] = obj_to_dict(val)
+    if isinstance(obj, list):
+        res = []
+        for val in obj:
+            res.append(obj_to_dict(val))
+
+    return res
+
+
 class KubernetesEntity(Entity):
     def __init__(self, hub, data, entity_id_format) -> None:
         self.hub = hub
@@ -69,10 +89,4 @@ class KubernetesEntity(Entity):
 
     @property
     def extra_state_attributes(self) -> dict:
-        attributes = {}
-
-        if self.getData().status.conditions != None:
-            for condition in self.getData().status.conditions:
-                attributes[condition.type] = condition.status
-
-        return attributes
+        return obj_to_dict(self.getData())
