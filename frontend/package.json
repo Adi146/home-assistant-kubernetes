@@ -1,0 +1,30 @@
+{
+  "name": "kubernetes",
+  "version": "1.0.0",
+  "description": "frontend for kubernetes custom component",
+  "main": "panel.js",
+  "scripts": {
+    "rollup": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adi146/home-assistant-kubernetes.git"
+  },
+  "keywords": [
+    "lovelace",
+    "home-assistant",
+    "kubernetes"
+  ],
+  "author": "Adi146",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Adi146/home-assistant-kubernetes/issues"
+  },
+  "homepage": "https://github.com/Adi146/home-assistant-kubernetes#readme",
+  "dependencies": {
+    "lit": "^2.0.2"
+  },
+  "devDependencies": {
+    "rollup": "^2.58.0"
+  }
+}

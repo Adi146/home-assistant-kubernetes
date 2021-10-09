@@ -7,7 +7,13 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.loader import async_get_integration
 
-from ..const import DOMAIN, FRONTEND_PANEL_TITLE, FRONTEND_PANEL_ICON, URL_BASE
+from ..const import (
+    FRONTEND_PANEL_TITLE,
+    FRONTEND_PANEL_ICON,
+    URL_BASE,
+    PANEL_URL,
+    TABLE_CARD_URL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,9 +23,10 @@ async def async_setup_frontend(
     entry: ConfigEntry,
 ) -> bool:
     frontend_dir = Path(__file__).parent / "www"
-    panel_url = f"{URL_BASE}/panel.js"
 
-    hass.http.register_static_path(URL_BASE, f"{frontend_dir}", True)
+    hass.http.register_static_path(URL_BASE, f"{frontend_dir}", False)
+
+    await setup_cards(hass)
 
     hass.components.frontend.async_register_built_in_panel(
         component_name="custom",
@@ -31,8 +38,12 @@ async def async_setup_frontend(
                 "name": "kubernetes-frontend",
                 "embed_iframe": False,
                 "trust_external": False,
-                "module_url": panel_url,
+                "module_url": PANEL_URL,
             }
         },
         require_admin=True,
     )
+
+
+async def setup_cards(hass: HomeAssistant):
+    hass.components.frontend.add_extra_js_url(hass, PANEL_URL)
