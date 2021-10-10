@@ -3,6 +3,7 @@ import {
   html,
   css,
 } from "lit";
+import { haStyle } from "../home-assistant/src/resources/styles.ts";
 
 import "./table-card.js"
 
@@ -35,55 +36,81 @@ class KubernetesPanel extends LitElement {
   }
 
   render() {
+    const page = this._page;
+    console.log(page);
     return html`
     <ha-app-layout>
-    <app-header fixed slot="header">
-      <app-toolbar>
-        <div><a href="${this.route.prefix}/Node">Nodes</a></div>
-        <div><a href="${this.route.prefix}/Deployment">Deployments</a></div>
-        <div><a href="${this.route.prefix}/DaemonSet">DaemonSets</a></div>
-        <div><a href="${this.route.prefix}/Pod">Pods</a></div>
-      </app-toolbar>
-    </app-header>
-    </ha-app-layout>
+      <app-header fixed slot="header">
+        <app-toolbar>
+          <ha-menu-button
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ha-menu-button>
+          <ha-tabs
+            scrollable
+            attr-for-selected="page-name"
+            .selected=${page}
+            @iron-activate=${this.handlePageSelected}
+          >
+            <paper-tab page-name="Node">Nodes</paper-tab>
+            <paper-tab page-name="Deployment">Deployments</paper-tab>
+            <paper-tab page-name="DaemonSet">DaemonSets</paper-tab>
+            <paper-tab page-name="Pod">Pods</paper-tab>
+          </ha-tabs>
+        </app-toolbar>
+      </app-header>
 
-    <table-card
-      .hass=${this.hass}
-      .config=${this.getConfig()}
-    ></table-card>
+      <table-card
+        .hass=${this.hass}
+        .config=${this.getConfig()}
+      ></table-card>
+    </ha-app-layout>
     `;
   }
 
+  handlePageSelected(ev) {
+    const newPage = ev.detail.item.getAttribute("page-name");
+    if (newPage !== this._page) {
+      //window.location.href = `/kubernetes-frontend/${newPage}`;
+      window.history.pushState(null, "", `/kubernetes-frontend/${newPage}`);
+
+      const event = new Event("location-changed", {});
+      window.dispatchEvent(event);
+    } else {
+      scrollTo(0, 0);
+    }
+  }
+
+  get _page() {
+    return this.route.path.substr(1);
+  }
+
   static get styles() {
-    return css`
+    return [
+      haStyle,
+      css`
       :host {
         display: block;
       }
-
-      app-toolbar {
-        overflow: hidden;
-        background-color: var(--app-header-background-color);
+      ha-tabs {
+        width: 100%;
+        height: 100%;
+        margin-left: 4px;
       }
-
-      .topnav a {
-        float: left;
-        color: #f2f2f2;
-        text-align: center;
-        padding: 18px 16px;
-        text-decoration: none;
-        font-size: 17px;
+      paper-tabs {
+        margin-left: 12px;
+        margin-left: max(env(safe-area-inset-left), 12px);
+        margin-right: env(safe-area-inset-right);
       }
-
-      .topnav a:hover {
-        background-color: #ddd;
-        color: black;
+      ha-tabs,
+      paper-tabs {
+        --paper-tabs-selection-bar-color: var(
+          --app-header-selection-bar-color,
+          var(--app-header-text-color, #fff)
+        );
+        text-transform: uppercase;
       }
-
-      .topnav a.active {
-        background-color: #04AA6D;
-        color: white;
-      }
-    `;
+    `];
   }
 }
 

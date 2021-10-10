@@ -11,7 +11,9 @@ export default [
       format: 'es',
       sourcemap: dev ? true : false,
     },
-    plugins: [nodeResolve()],
+    plugins: [
+      nodeResolve(),
+    ],
     watch: {
       exclude: 'node_modules/**',
     },
