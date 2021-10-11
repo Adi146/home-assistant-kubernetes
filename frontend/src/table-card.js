@@ -30,14 +30,33 @@ export class TableCard extends LitElement {
     }
   }
 
+  getStateClass(obj, value, colorMap) {
+    if (colorMap) {
+      for (const [k, v] of Object.entries(colorMap)) {
+        if (value == v) {
+          return k;
+        }
+        else if (value == this.findByPath(obj, v)){
+          return k;
+        }
+      }
+    }
+
+    return "";
+  }
+
   render() {
     return html`
-    <ha-card header="Pods">
+    <ha-card>
+      ${this.config.header ?
+        html`<h1 class="card-header">${this.config.header.title}</h1>` :
+        html``
+      }
       <table>
-      <tr>
-        ${Object.keys(this.config.columns).map(header => {
+      <tr class="table-header">
+        ${this.config.columns.map(column => {
           return html`
-          <th>${header}</th>
+          <th><h4>${column.header}</h4></th>
           `;
         })}
       </tr>
@@ -52,10 +71,13 @@ export class TableCard extends LitElement {
       }).
       map(state => {
         return html`
-          <tr>
-            ${Object.values(this.config.columns).map(selector => {
+          <tr class="table-row">
+            ${this.config.columns.map(column => {
+              const value = this.findByPath(state, column.path);
+              const stateClass = this.getStateClass(state, value, column.states);
+
               return html`
-                <th>${this.findByPath(state, selector)}</th>
+                <th class="table-cell ${stateClass}">${value}</th>
               `;
             })}
           </tr>
@@ -84,13 +106,21 @@ export class TableCard extends LitElement {
 
   static get styles() {
     return css`
-      :host {
-        background-color: #fafafa;
-        padding: 16px;
-        display: block;
-      }
       table {
         width: 100%;
+      }
+      .table-header {
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .success {
+        color: var(--success-color);
+      }
+      .warning {
+        color: var(--warning-color);
+      }
+      .error {
+        color: var(--error-color);
       }
     `;
   }

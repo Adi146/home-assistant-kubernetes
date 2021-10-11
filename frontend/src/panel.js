@@ -24,11 +24,11 @@ class KubernetesPanel extends LitElement {
 
   getConfig() {
     return {
-      columns: {
-        Name: "attributes.metadata.name",
-        Namespace: "attributes.metadata.namespace",
-        State: "state"
-      },
+      columns: [
+        { header: "Name", path: "attributes.metadata.name" },
+        { header: "Namespace", path: "attributes.metadata.namespace" },
+        { header: "State", path: "state"}
+      ],
       filters: {
         "attributes.device_class": this.route.path.substring(1),
       }
@@ -37,7 +37,6 @@ class KubernetesPanel extends LitElement {
 
   render() {
     const page = this._page;
-    console.log(page);
     return html`
     <ha-app-layout>
       <app-header fixed slot="header">
