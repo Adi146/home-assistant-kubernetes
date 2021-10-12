@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-    - '*'
+    - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build-frontend:
@@ -27,7 +27,7 @@ jobs:
         working-directory: ./frontend
       - name: Zip
         run: |
-          zip -r release.zip custom_components/
+          cd custom_components/kubernetes; zip -r ../../release.zip *
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
