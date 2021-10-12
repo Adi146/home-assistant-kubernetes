@@ -1,0 +1,8 @@
+{
+    "name": "Kubernetes",
+    "domains": [
+        "sensor"
+    ],
+    "zip_release": true,
+    "filename": "home-assistant-kubernetes.zip"
+}
