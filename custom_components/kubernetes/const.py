@@ -24,3 +24,10 @@ KUBERNETES_KIND_NODE = "Node"
 KUBERNETES_KIND_DEPLOYMENT = "Deployment"
 KUBERNETES_KIND_DAEMONSET = "DaemonSet"
 KUBERNETES_KIND_POD = "Pod"
+
+URL_BASE = "/kubernetes"
+PANEL_URL = f"{URL_BASE}/panel.js"
+TABLE_CARD_URL = f"{URL_BASE}/table-card.js"
+
+FRONTEND_PANEL_TITLE = "Kubernetes"
+FRONTEND_PANEL_ICON = "mdi:kubernetes"
