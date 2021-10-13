@@ -7,11 +7,11 @@ import {
 export class TableCard extends LitElement {
   static get properties() {
     return {
-        hass: { type: Object },
-        narrow: { type: Boolean },
-        route: { type: Object },
-        panel: { type: Object },
-        config: {},
+      hass: { type: Object },
+      narrow: { type: Boolean },
+      route: { type: Object },
+      panel: { type: Object },
+      config: {},
     };
   }
 
@@ -20,13 +20,13 @@ export class TableCard extends LitElement {
   }
 
   findByPath(obj, path) {
-    const pathSplitted = path.split('.')
-    const first = pathSplitted.shift()
+    const pathSplitted = path.split(/\.|\[|\]\.|\]/);
+    const first = pathSplitted.shift();
 
     if (pathSplitted.length == 0) {
-      return obj[first]
+      return obj[first];
     } else {
-      return this.findByPath(obj[first], pathSplitted.join('.'))
+      return this.findByPath(obj[first], pathSplitted.join('.'));
     }
   }
 
@@ -36,7 +36,7 @@ export class TableCard extends LitElement {
         if (value == v) {
           return k;
         }
-        else if (value == this.findByPath(obj, v)){
+        else if (value == this.findByPath(obj, v)) {
           return k;
         }
       }
@@ -45,7 +45,53 @@ export class TableCard extends LitElement {
     return "";
   }
 
+  getData() {
+    var data = [];
+
+    Object.values(this.hass.states).
+      filter(state => {
+        for (const [key, value] of Object.entries(this.config.filters)) {
+          if (this.findByPath(state, key) != value) {
+            return false;
+          }
+        }
+        return true;
+      }).
+      forEach(state => {
+        var obj = {};
+        this.config.columns.forEach(column => {
+          obj[column.header] = this.findByPath(state, column.path);
+        });
+
+        data.push(obj);
+      })
+
+    return data;
+  }
+
+  sortData(data) {
+    if (!this.config.sortBy) {
+      return
+    }
+
+    data.sort((a, b) => {
+      var valA = a[this.config.sortBy].toUpperCase();
+      var valB = b[this.config.sortBy].toUpperCase();
+      if (valA < valB) {
+        return this.config.sortDESC ? 1 : -1;
+      }
+      if (valA > valB) {
+        return this.config.sortDESC ? -1 : 1;
+      }
+
+      return 0;
+    });
+  }
+
   render() {
+    var data = this.getData();
+    this.sortData(data);
+
     return html`
     <ha-card>
       ${this.config.header ?
@@ -55,53 +101,29 @@ export class TableCard extends LitElement {
       <table>
       <tr class="table-header">
         ${this.config.columns.map(column => {
-          return html`
-          <th><h4>${column.header}</h4></th>
+        return html`
+          <th class="table-header-cell ${(this.config.sortBy == column.header) ? `sort-by` : ``}" @click="${(e) => {
+            this.config.sortDESC = this.config.sortBy == column.header && !this.config.sortDESC;
+            this.config.sortBy = column.header;
+
+            this.requestUpdate()
+          }}"><h4>${column.header}</h4></th>
           `;
-        })}
+      })}
       </tr>
-      ${Object.values(this.hass.states).
-      filter(state => {
-        for (const [key, value] of Object.entries(this.config.filters)) {
-          if (this.findByPath(state, key) != value) {
-            return false;
-          }
-        }
-        return true;
-      }).
-      map(state => {
+      ${data.map(row => {
         return html`
           <tr class="table-row">
-            ${this.config.columns.map(column => {
-              const value = this.findByPath(state, column.path);
-              const stateClass = this.getStateClass(state, value, column.states);
-
-              return html`
-                <th class="table-cell ${stateClass}">${value}</th>
-              `;
-            })}
-          </tr>
-        `;
+          ${Object.values(row).map(cell => {
+          return html`
+              <th class="table-cell">${cell}</th>
+            `;
+        })}
+          </tr>`
       })}
       </table>
     </ha-card>
     `;
-  }
-
-  getOverallPodHealth() {
-    count = 0;
-    healthy = 0;
-
-    Object.values(tis.hass.state).map(state => {
-      if (state.attributes.device_class == "Pod") {
-        count++;
-        if (state.state == "Ready") {
-          healthy++;
-        }
-      }
-    })
-
-    return healthy / count;
   }
 
   static get styles() {
@@ -112,6 +134,10 @@ export class TableCard extends LitElement {
       .table-header {
         font-weight: bold;
         text-transform: uppercase;
+        cursor: pointer;
+      }
+      .sort-by {
+        text-decoration: underline;
       }
       .success {
         color: var(--success-color);
