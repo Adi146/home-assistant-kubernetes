@@ -4,6 +4,7 @@ import {
   css,
 } from "lit";
 import { haStyle } from "../home-assistant/src/resources/styles.ts";
+import { fireEvent } from "card-tools/src/event";
 
 import "./table-card.js"
 
@@ -23,16 +24,53 @@ class KubernetesPanel extends LitElement {
   }
 
   getConfig() {
-    return {
-      columns: [
-        { header: "Name", path: "attributes.metadata.name" },
-        { header: "Namespace", path: "attributes.metadata.namespace" },
-        { header: "State", path: "state"}
-      ],
-      filters: {
-        "attributes.device_class": this.route.path.substring(1),
-      }
+    switch (this._page) {
+      case "Node":
+        return {
+          columns: [
+            { header: "Name", path: "attributes.metadata.name" },
+            { header: "State", path: "state" }
+          ],
+          filters: {
+            "attributes.device_class": this._page
+          }
+        }
+      case "Deployment":
+        return {
+          columns: [
+            { header: "Name", path: "attributes.metadata.name" },
+            { header: "Namespace", path: "attributes.metadata.namespace" },
+            { header: "State", path: "state" }
+          ],
+          filters: {
+            "attributes.device_class": this._page
+          }
+        }
+      case "DaemonSet":
+        return {
+          columns: [
+            { header: "Name", path: "attributes.metadata.name" },
+            { header: "Namespace", path: "attributes.metadata.namespace" },
+            { header: "State", path: "state" }
+          ],
+          filters: {
+            "attributes.device_class": this._page
+          }
+        }
+      case "Pod":
+        return {
+          columns: [
+            { header: "Name", path: "attributes.metadata.name" },
+            { header: "Namespace", path: "attributes.metadata.namespace" },
+            { header: "Node", path: "attributes.spec.node_name" },
+            { header: "State", path: "state" }
+          ],
+          filters: {
+            "attributes.device_class": this._page
+          }
+        }
     }
+
   }
 
   render() {
@@ -70,11 +108,8 @@ class KubernetesPanel extends LitElement {
   handlePageSelected(ev) {
     const newPage = ev.detail.item.getAttribute("page-name");
     if (newPage !== this._page) {
-      //window.location.href = `/kubernetes-frontend/${newPage}`;
       window.history.pushState(null, "", `/kubernetes-frontend/${newPage}`);
-
-      const event = new Event("location-changed", {});
-      window.dispatchEvent(event);
+      fireEvent("location-changed", {}, window);
     } else {
       scrollTo(0, 0);
     }

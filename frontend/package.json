@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/Adi146/home-assistant-kubernetes#readme",
   "dependencies": {
+    "card-tools": "github:thomasloven/lovelace-card-tools",
     "lit": "^2.0.2"
   },
   "devDependencies": {
