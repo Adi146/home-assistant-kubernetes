@@ -80,6 +80,9 @@ class KubernetesHub:
     def list_pods_func(self):
         return self.core_v1.list_pod_for_all_namespaces
 
+    def list_namespaces_func(self):
+        return self.core_v1.list_namespace
+
     async def set_unschedulable(self, node: str, unschedulable: bool):
         body = {"spec": {"unschedulable": unschedulable}}
 

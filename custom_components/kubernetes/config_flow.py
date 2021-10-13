@@ -22,7 +22,13 @@ async def validate_input(hass: HomeAssistant, data: dict) -> dict[str, Any]:
     """
     hub = KubernetesHub(hass)
 
+    await hub.async_start()
+
+    # do single request to validate authentification.
+    await hub.list_namespaces_func()()
+
     return {"title": DOMAIN}
+
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow."""
@@ -32,7 +38,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
-        
+
         errors = {}
         if user_input is not None:
             try:
@@ -46,9 +52,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
 
-        return self.async_show_form(
-            step_id="user", data_schema=None, errors=errors
-        )
+        return self.async_show_form(step_id="user", data_schema=None, errors=errors)
 
 
 class MissingConfig(exceptions.HomeAssistantError):
