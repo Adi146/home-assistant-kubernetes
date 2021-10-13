@@ -10,8 +10,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import config_validation as cv, entity_platform
 
-import kubernetes_asyncio
-
 from ..const import (
     DOMAIN,
     SERVICE_SET_IMAGE_DEPLOYMENT,
@@ -57,9 +55,7 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
 
     @property
     def state(self) -> str:
-        return (
-            f"{self.getData().status.ready_replicas}/{self.getData().status.replicas}"
-        )
+        return self.getData().status.ready_replicas
 
     async def set_image(self, container: str, image: str) -> None:
         await self.hub.set_image(
