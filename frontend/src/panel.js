@@ -28,8 +28,8 @@ class KubernetesPanel extends LitElement {
       case "Node":
         return {
           columns: [
-            { header: "Name", path: "attributes.metadata.name" },
-            { header: "State", path: "state" }
+            { header: "Name", function: "return entity_row.attributes.metadata.name" },
+            { header: "State", function: "return entity_row.state" }
           ],
           filters: {
             "attributes.device_class": this._page
@@ -38,9 +38,9 @@ class KubernetesPanel extends LitElement {
       case "Deployment":
         return {
           columns: [
-            { header: "Name", path: "attributes.metadata.name" },
-            { header: "Namespace", path: "attributes.metadata.namespace" },
-            { header: "State", path: "state" }
+            { header: "Name", function: "return entity_row.attributes.metadata.name" },
+            { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
+            { header: "State", function: "return entity_row.state" }
           ],
           filters: {
             "attributes.device_class": this._page
@@ -49,9 +49,9 @@ class KubernetesPanel extends LitElement {
       case "DaemonSet":
         return {
           columns: [
-            { header: "Name", path: "attributes.metadata.name" },
-            { header: "Namespace", path: "attributes.metadata.namespace" },
-            { header: "State", path: "state" }
+            { header: "Name", function: "return entity_row.attributes.metadata.name" },
+            { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
+            { header: "State", function: "return entity_row.state" }
           ],
           filters: {
             "attributes.device_class": this._page
@@ -60,10 +60,10 @@ class KubernetesPanel extends LitElement {
       case "Pod":
         return {
           columns: [
-            { header: "Name", path: "attributes.metadata.name" },
-            { header: "Namespace", path: "attributes.metadata.namespace" },
-            { header: "Node", path: "attributes.spec.node_name" },
-            { header: "State", path: "state" }
+            { header: "Name", function: "return entity_row.attributes.metadata.name" },
+            { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
+            { header: "Node", function: "return entity_row.attributes.spec.node_name" },
+            { header: "State", function: "return entity_row.state" }
           ],
           filters: {
             "attributes.device_class": this._page

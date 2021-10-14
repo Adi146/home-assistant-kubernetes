@@ -4,6 +4,8 @@ import {
   css,
 } from "lit";
 
+import { moreInfo } from "card-tools/src/more-info"
+
 export class TableCard extends LitElement {
   static get properties() {
     return {
@@ -30,20 +32,6 @@ export class TableCard extends LitElement {
     }
   }
 
-  getStateClass(obj, value, colorMap) {
-    if (colorMap) {
-      for (const [k, v] of Object.entries(colorMap)) {
-        if (value == v) {
-          return k;
-        }
-        else if (value == this.findByPath(obj, v)) {
-          return k;
-        }
-      }
-    }
-
-    return "";
-  }
 
   getData() {
     var data = [];
@@ -58,9 +46,20 @@ export class TableCard extends LitElement {
         return true;
       }).
       forEach(state => {
-        var obj = {};
+        var obj = {
+          _entityID: state.entity_id,
+        };
         this.config.columns.forEach(column => {
-          obj[column.header] = this.findByPath(state, column.path);
+          if (column.function) {
+            var func = Function("entity_row", column.function);
+            obj[column.header] = func(state);
+          }
+          else if (column.path) {
+            obj[column.header] = this.findByPath(state, column.path);
+          }
+          else {
+            obj[column.header] = "";
+          }
         });
 
         data.push(obj);
@@ -111,14 +110,20 @@ export class TableCard extends LitElement {
           `;
       })}
       </tr>
+
       ${data.map(row => {
         return html`
-          <tr class="table-row">
-          ${Object.values(row).map(cell => {
-          return html`
-              <th class="table-cell">${cell}</th>
+          <tr class="table-row" @click="${(e) => {
+            moreInfo(row._entityID);
+          }}">
+          ${Object.keys(row).map(header => {
+            if (header.startsWith("_")) {
+              return html``;
+            }
+            return html`
+              <th class="table-cell">${row[header]}</th>
             `;
-        })}
+          })}
           </tr>`
       })}
       </table>
@@ -130,11 +135,18 @@ export class TableCard extends LitElement {
     return css`
       table {
         width: 100%;
+        background-color: var(--table-row-background-color);
       }
       .table-header {
         font-weight: bold;
         text-transform: uppercase;
         cursor: pointer;
+      }
+      .table-row {
+        cursor: pointer;
+      }
+      .table-row:hover {
+        background-color: var(--table-row-alternative-background-color);
       }
       .sort-by {
         text-decoration: underline;
