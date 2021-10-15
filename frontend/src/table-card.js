@@ -13,12 +13,32 @@ export class TableCard extends LitElement {
       narrow: { type: Boolean },
       route: { type: Object },
       panel: { type: Object },
-      config: {},
     };
   }
 
-  setConfig(config) {
-    this.config = config;
+  set config(config) {
+    this._config = config;
+    if (!this.sort) {
+      this.sort = this._config.sort;
+    }
+  }
+
+  get config() {
+    return this._config;
+  }
+
+  set sort(sort) {
+    this._sort = sort;
+  }
+
+  get sort() {
+    if (!this._sort) {
+      return {
+        by: null,
+        DESC: false,
+      };
+    }
+    return this._sort;
   }
 
   findByPath(obj, path) {
@@ -71,18 +91,18 @@ export class TableCard extends LitElement {
   }
 
   sortData(data) {
-    if (!this.config.sortBy) {
+    if (!this.sort.by) {
       return
     }
 
     data.sort((a, b) => {
-      var valA = a[this.config.sortBy].toUpperCase();
-      var valB = b[this.config.sortBy].toUpperCase();
+      var valA = a[this.sort.by].toUpperCase();
+      var valB = b[this.sort.by].toUpperCase();
       if (valA < valB) {
-        return this.config.sortDESC ? 1 : -1;
+        return this.sort.DESC ? 1 : -1;
       }
       if (valA > valB) {
-        return this.config.sortDESC ? -1 : 1;
+        return this.sort.DESC ? -1 : 1;
       }
 
       return 0;
@@ -103,9 +123,11 @@ export class TableCard extends LitElement {
       <tr class="table-header">
         ${this.config.columns.map(column => {
         return html`
-          <th class="table-header-cell ${(this.config.sortBy == column.header) ? `sort-by` : ``}" @click="${(e) => {
-            this.config.sortDESC = this.config.sortBy == column.header && !this.config.sortDESC;
-            this.config.sortBy = column.header;
+          <th class="table-header-cell ${(this.sort.by == column.header) ? `sort-by` : ``}" @click="${(e) => {
+            this.sort = {
+              by: column.header,
+              DESC: this.sort.by == column.header && !this.sort.DESC
+            };
 
             this.requestUpdate()
           }}"><h4>${column.header}</h4></th>
