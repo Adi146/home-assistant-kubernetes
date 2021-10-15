@@ -38,9 +38,11 @@ export class TableCard extends LitElement {
 
     Object.values(this.hass.states).
       filter(state => {
-        for (const [key, value] of Object.entries(this.config.filters)) {
-          if (this.findByPath(state, key) != value) {
-            return false;
+        if (this.config.filters) {
+          for (const [key, value] of Object.entries(this.config.filters)) {
+            if (this.findByPath(state, key) != value) {
+              return false;
+            }
           }
         }
         return true;

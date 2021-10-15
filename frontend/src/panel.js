@@ -7,11 +7,11 @@ import { haStyle } from "../home-assistant/src/resources/styles.ts";
 import { fireEvent } from "card-tools/src/event";
 
 import "./table-card.js"
+import "./namespace-selector.js"
 
 class KubernetesPanel extends LitElement {
   constructor() {
-    super()
-    this.table = document.createElement("table-card");
+    super();
   }
 
   static get properties() {
@@ -20,13 +20,15 @@ class KubernetesPanel extends LitElement {
       narrow: { type: Boolean },
       route: { type: Object },
       panel: { type: Object },
+      namespace: { type: String },
     };
   }
 
   getConfig() {
+    var config = {};
     switch (this._page) {
       case "Node":
-        return {
+        config = {
           columns: [
             { header: "Name", function: "return entity_row.attributes.metadata.name" },
             { header: "State", function: "return entity_row.state" }
@@ -35,8 +37,9 @@ class KubernetesPanel extends LitElement {
             "attributes.device_class": this._page
           }
         }
+        break;
       case "Deployment":
-        return {
+        config =  {
           columns: [
             { header: "Name", function: "return entity_row.attributes.metadata.name" },
             { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
@@ -46,8 +49,9 @@ class KubernetesPanel extends LitElement {
             "attributes.device_class": this._page
           }
         }
+        break;
       case "DaemonSet":
-        return {
+        config = {
           columns: [
             { header: "Name", function: "return entity_row.attributes.metadata.name" },
             { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
@@ -57,8 +61,9 @@ class KubernetesPanel extends LitElement {
             "attributes.device_class": this._page
           }
         }
+        break;
       case "Pod":
-        return {
+        config =  {
           columns: [
             { header: "Name", function: "return entity_row.attributes.metadata.name" },
             { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
@@ -69,8 +74,14 @@ class KubernetesPanel extends LitElement {
             "attributes.device_class": this._page
           }
         }
+        break;
     }
 
+    if (this.namespace && this.namespace != "all") {
+      config.filters["attributes.metadata.namespace"] = this.namespace;
+    }
+
+    return config;
   }
 
   render() {
@@ -94,13 +105,34 @@ class KubernetesPanel extends LitElement {
             <paper-tab page-name="DaemonSet">DaemonSets</paper-tab>
             <paper-tab page-name="Pod">Pods</paper-tab>
           </ha-tabs>
-        </app-toolbar>
-      </app-header>
 
+          ${!this.narrow ?
+            html`
+            <namespace-selector
+            .hass=${this.hass}
+            @namespace-changed=${(e) => this.namespace = e.detail.namespace}
+            ></namespace-selector>`
+            : html``
+          }
+        </app-toolbar>
+        ${this.narrow ?
+          html`
+          <namespace-selector
+          .hass=${this.hass}
+          @namespace-changed=${(e) => this.namespace = e.detail.namespace}
+          ></namespace-selector>`
+          : html``
+        }
+      </app-header>
+      ${page ? html`
       <table-card
         .hass=${this.hass}
         .config=${this.getConfig()}
       ></table-card>
+      `:
+      html``
+      }
+
     </ha-app-layout>
     `;
   }
@@ -143,6 +175,9 @@ class KubernetesPanel extends LitElement {
           var(--app-header-text-color, #fff)
         );
         text-transform: uppercase;
+      }
+      namespace-selector {
+        margin: 20px;
       }
     `];
   }
