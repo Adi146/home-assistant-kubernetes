@@ -10,6 +10,7 @@
         "step": {
             "user": {
                 "data": {
+                    "panel": "Create panel"
                 }
             }
         }

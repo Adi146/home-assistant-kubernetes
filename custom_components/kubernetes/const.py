@@ -6,8 +6,8 @@ from typing import Final
 DOMAIN: Final = "kubernetes"
 
 CONF_FILE = "./config"
-UPDATE_INTERVAL = 30
 
+CONFIG_FLOW_PANEL = "panel"
 
 SERVICE_SET_IMAGE_DEPLOYMENT = "set_image_deployment"
 SERVICE_SET_IMAGE_DAEMONSET = "set_image_daemon_set"
@@ -27,7 +27,6 @@ KUBERNETES_KIND_POD = "Pod"
 
 URL_BASE = "/kubernetes"
 PANEL_URL = f"{URL_BASE}/panel.js"
-TABLE_CARD_URL = f"{URL_BASE}/table-card.js"
 
 FRONTEND_PANEL_TITLE = "Kubernetes"
 FRONTEND_PANEL_ICON = "mdi:kubernetes"
