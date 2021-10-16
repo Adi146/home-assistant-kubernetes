@@ -10,7 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import config_validation as cv, entity_platform
 
-from ..const import DOMAIN, KUBERNETES_KIND_POD
+from ..const import DOMAIN, KUBERNETES_KIND_NAMESPACE
 from ..kubernetes_entity import KubernetesEntity, async_cleanup_registry
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ async def async_setup_entry(
     hub = hass.data[DOMAIN][entry.entry_id]
 
     await async_cleanup_registry(
-        hass, entry, KUBERNETES_KIND_POD, hub.list_namespaces_func()
+        hass, entry, KUBERNETES_KIND_NAMESPACE, hub.list_namespaces_func()
     )
 
     await hub.async_start_listener(
