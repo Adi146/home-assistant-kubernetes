@@ -92,12 +92,12 @@ export class TableCard extends LitElement {
 
   sortData(data) {
     if (!this.sort.by) {
-      return
+      return;
     }
 
     data.sort((a, b) => {
-      var valA = a[this.sort.by].toUpperCase();
-      var valB = b[this.sort.by].toUpperCase();
+      var valA = this.sort.by in a ? a[this.sort.by].toUpperCase() : 0;
+      var valB = this.sort.by in b ? b[this.sort.by].toUpperCase() : 0;
       if (valA < valB) {
         return this.sort.DESC ? 1 : -1;
       }
