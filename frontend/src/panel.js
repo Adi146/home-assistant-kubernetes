@@ -8,8 +8,10 @@ import {
   getName,
   getNamespace,
   getNodeConditions,
+  getNodeConditionsStateClass,
   getNodeSchedulable,
   getNodeSchedulableIcon,
+  getNodeSchedulableStateClass,
 } from "./table-functions.js";
 
 class KubernetesPanel extends LitElement {
@@ -48,8 +50,12 @@ class KubernetesPanel extends LitElement {
             Schedualable: {
               function: getNodeSchedulable,
               transformation: getNodeSchedulableIcon,
+              state_function: getNodeSchedulableStateClass,
             },
-            Conditions: { function: getNodeConditions },
+            Conditions: {
+              function: getNodeConditions,
+              state_function: getNodeConditionsStateClass,
+            },
           },
           filter_functions: [filterByPage],
         };

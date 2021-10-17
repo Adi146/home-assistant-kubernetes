@@ -42,7 +42,13 @@ export class TableCard extends LitElement {
     return this._sort;
   }
 
-  getAsFunction(func, ...args) {
+  getAsFunction(func, defaultValue, ...args) {
+    if (!func) {
+      return function () {
+        return defaultValue;
+      };
+    }
+
     if (typeof func === "function") {
       return func;
     } else {
@@ -56,7 +62,7 @@ export class TableCard extends LitElement {
       .filter((state) => {
         if (this.config.filter_functions) {
           for (const filter_function of this.config.filter_functions) {
-            var func = this.getAsFunction(filter_function, "entity_row");
+            var func = this.getAsFunction(filter_function, true, "entity_row");
             if (!func(state)) {
               return false;
             }
@@ -69,8 +75,15 @@ export class TableCard extends LitElement {
           _entityID: state.entity_id,
         };
         for (const [header, column] of Object.entries(this.config.columns)) {
-          var func = this.getAsFunction(column.function, "entity_row");
-          obj[header] = func(state);
+          var func = this.getAsFunction(column.function, "", "entity_row");
+          obj[header] = {
+            value: this.getAsFunction(column.function, "", "entity_row")(state),
+            state: this.getAsFunction(
+              column.state_function,
+              "",
+              "entity_row"
+            )(state),
+          };
         }
 
         data.push(obj);
@@ -85,8 +98,8 @@ export class TableCard extends LitElement {
     }
 
     data.sort((a, b) => {
-      var valA = this.sort.by in a ? a[this.sort.by] : 0;
-      var valB = this.sort.by in b ? b[this.sort.by] : 0;
+      var valA = this.sort.by in a ? a[this.sort.by].value : 0;
+      var valB = this.sort.by in b ? b[this.sort.by].value : 0;
       if (valA < valB) {
         return this.sort.DESC ? 1 : -1;
       }
@@ -139,13 +152,12 @@ export class TableCard extends LitElement {
             >
               ${Object.keys(this.config.columns).map((header) => {
                 return html`
-                  <th class="table-cell">
-                    ${this.config.columns[header].transformation
-                      ? html`${this.getAsFunction(
-                          this.config.columns[header].transformation,
-                          "value"
-                        )(row[header])}`
-                      : html`${row[header]}`}
+                  <th class="table-cell ${row[header].state}">
+                    ${this.getAsFunction(
+                      this.config.columns[header].transformation,
+                      html`${row[header].value}`,
+                      "value"
+                    )(row[header].value)}
                   </th>
                 `;
               })}
