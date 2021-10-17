@@ -25,63 +25,65 @@ class KubernetesPanel extends LitElement {
   }
 
   getConfig() {
-    var config = {};
+    var filterByPage = (function(state) {
+      return state.attributes.device_class === this._page;
+    }).bind(this);
+    var filterByNamespace = (function(state) {
+      if (this.namespace && this.namespace != "all") {
+        return state.attributes.metadata.namespace === this.namespace;
+      }
+      return true;
+    }).bind(this);
+
     switch (this._page) {
       case "Node":
-        config = {
+        return {
           columns: [
             { header: "Name", function: "return entity_row.attributes.metadata.name" },
             { header: "State", function: "return entity_row.state" }
           ],
-          filters: {
-            "attributes.device_class": this._page
-          }
+          filter_functions: [
+            filterByPage,
+          ]
         }
-        break;
       case "Deployment":
-        config =  {
+        return {
           columns: [
             { header: "Name", function: "return entity_row.attributes.metadata.name" },
             { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
             { header: "State", function: "return entity_row.state" }
           ],
-          filters: {
-            "attributes.device_class": this._page
-          }
+          filter_functions: [
+            filterByPage,
+            filterByNamespace,
+          ]
         }
-        break;
       case "DaemonSet":
-        config = {
+        return {
           columns: [
             { header: "Name", function: "return entity_row.attributes.metadata.name" },
             { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
             { header: "State", function: "return entity_row.state" }
           ],
-          filters: {
-            "attributes.device_class": this._page
-          }
+          filter_functions: [
+            filterByPage,
+            filterByNamespace,
+          ]
         }
-        break;
       case "Pod":
-        config =  {
+        return {
           columns: [
             { header: "Name", function: "return entity_row.attributes.metadata.name" },
             { header: "Namespace", function: "return entity_row.attributes.metadata.namespace" },
             { header: "Node", function: "return entity_row.attributes.spec.node_name" },
             { header: "State", function: "return entity_row.state" }
           ],
-          filters: {
-            "attributes.device_class": this._page
-          }
+          filter_functions: [
+            filterByPage,
+            filterByNamespace,
+          ]
         }
-        break;
     }
-
-    if (this.namespace && this.namespace != "all") {
-      config.filters["attributes.metadata.namespace"] = this.namespace;
-    }
-
-    return config;
   }
 
   render() {

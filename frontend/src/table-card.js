@@ -13,6 +13,9 @@ export class TableCard extends LitElement {
       narrow: { type: Boolean },
       route: { type: Object },
       panel: { type: Object },
+      _config: { hasChanged(newVal, oldVal){
+        return true;
+      }}
     };
   }
 
@@ -41,26 +44,21 @@ export class TableCard extends LitElement {
     return this._sort;
   }
 
-  findByPath(obj, path) {
-    const pathSplitted = path.split(/\.|\[|\]\.|\]/);
-    const first = pathSplitted.shift();
-
-    if (pathSplitted.length == 0) {
-      return obj[first];
-    } else {
-      return this.findByPath(obj[first], pathSplitted.join('.'));
-    }
-  }
-
-
   getData() {
     var data = [];
-
     Object.values(this.hass.states).
       filter(state => {
-        if (this.config.filters) {
-          for (const [key, value] of Object.entries(this.config.filters)) {
-            if (this.findByPath(state, key) != value) {
+        if (this.config.filter_functions) {
+          for (const filter_function of this.config.filter_functions) {
+            var func;
+            if (typeof filter_function === 'function') {
+              func = filter_function;
+            }
+            else {
+              func = Function("entity_row", filter_function);
+            }
+
+            if (!func(state)) {
               return false;
             }
           }
@@ -75,9 +73,6 @@ export class TableCard extends LitElement {
           if (column.function) {
             var func = Function("entity_row", column.function);
             obj[column.header] = func(state);
-          }
-          else if (column.path) {
-            obj[column.header] = this.findByPath(state, column.path);
           }
           else {
             obj[column.header] = "";
