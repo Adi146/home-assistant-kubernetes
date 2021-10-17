@@ -42,19 +42,21 @@ export class TableCard extends LitElement {
     return this._sort;
   }
 
+  getAsFunction(func, ...args) {
+    if (typeof func === "function") {
+      return func;
+    } else {
+      return Function(args, func);
+    }
+  }
+
   getData() {
     var data = [];
     Object.values(this.hass.states)
       .filter((state) => {
         if (this.config.filter_functions) {
           for (const filter_function of this.config.filter_functions) {
-            var func;
-            if (typeof filter_function === "function") {
-              func = filter_function;
-            } else {
-              func = Function("entity_row", filter_function);
-            }
-
+            var func = this.getAsFunction(filter_function, "entity_row");
             if (!func(state)) {
               return false;
             }
@@ -66,14 +68,10 @@ export class TableCard extends LitElement {
         var obj = {
           _entityID: state.entity_id,
         };
-        this.config.columns.forEach((column) => {
-          if (column.function) {
-            var func = Function("entity_row", column.function);
-            obj[column.header] = func(state);
-          } else {
-            obj[column.header] = "";
-          }
-        });
+        for (const [header, column] of Object.entries(this.config.columns)) {
+          var func = this.getAsFunction(column.function, "entity_row");
+          obj[header] = func(state);
+        }
 
         data.push(obj);
       });
@@ -87,8 +85,8 @@ export class TableCard extends LitElement {
     }
 
     data.sort((a, b) => {
-      var valA = this.sort.by in a ? a[this.sort.by].toUpperCase() : 0;
-      var valB = this.sort.by in b ? b[this.sort.by].toUpperCase() : 0;
+      var valA = this.sort.by in a ? a[this.sort.by] : 0;
+      var valB = this.sort.by in b ? b[this.sort.by] : 0;
       if (valA < valB) {
         return this.sort.DESC ? 1 : -1;
       }
@@ -111,22 +109,22 @@ export class TableCard extends LitElement {
           : html``}
         <table>
           <tr class="table-header">
-            ${this.config.columns.map((column) => {
+            ${Object.keys(this.config.columns).map((header) => {
               return html`
                 <th
-                  class="table-header-cell ${this.sort.by == column.header
+                  class="table-header-cell ${this.sort.by == header
                     ? `sort-by`
                     : ``}"
                   @click="${(e) => {
                     this.sort = {
-                      by: column.header,
-                      DESC: this.sort.by == column.header && !this.sort.DESC,
+                      by: header,
+                      DESC: this.sort.by == header && !this.sort.DESC,
                     };
 
                     this.requestUpdate();
                   }}"
                 >
-                  <h4>${column.header}</h4>
+                  <h4>${header}</h4>
                 </th>
               `;
             })}
@@ -139,11 +137,17 @@ export class TableCard extends LitElement {
                 moreInfo(row._entityID);
               }}"
             >
-              ${Object.keys(row).map((header) => {
-                if (header.startsWith("_")) {
-                  return html``;
-                }
-                return html` <th class="table-cell">${row[header]}</th> `;
+              ${Object.keys(this.config.columns).map((header) => {
+                return html`
+                  <th class="table-cell">
+                    ${this.config.columns[header].transformation
+                      ? html`${this.getAsFunction(
+                          this.config.columns[header].transformation,
+                          "value"
+                        )(row[header])}`
+                      : html`${row[header]}`}
+                  </th>
+                `;
               })}
             </tr>`;
           })}

@@ -4,6 +4,13 @@ import { fireEvent } from "card-tools/src/event";
 
 import "./table-card.js";
 import "./namespace-selector.js";
+import {
+  getName,
+  getNamespace,
+  getNodeConditions,
+  getNodeSchedulable,
+  getNodeSchedulableIcon,
+} from "./table-functions.js";
 
 class KubernetesPanel extends LitElement {
   constructor() {
@@ -26,7 +33,7 @@ class KubernetesPanel extends LitElement {
     }.bind(this);
     var filterByNamespace = function (state) {
       if (this.namespace && this.namespace != "all") {
-        return state.attributes.metadata.namespace === this.namespace;
+        return getNamespace(state) === this.namespace;
       }
       return true;
     }.bind(this);
@@ -34,62 +41,58 @@ class KubernetesPanel extends LitElement {
     switch (this._page) {
       case "Node":
         return {
-          columns: [
-            {
-              header: "Name",
-              function: "return entity_row.attributes.metadata.name",
+          columns: {
+            Name: {
+              function: getName,
             },
-            { header: "State", function: "return entity_row.state" },
-          ],
+            Schedualable: {
+              function: getNodeSchedulable,
+              transformation: getNodeSchedulableIcon,
+            },
+            Conditions: { function: getNodeConditions },
+          },
           filter_functions: [filterByPage],
         };
       case "Deployment":
         return {
-          columns: [
-            {
-              header: "Name",
-              function: "return entity_row.attributes.metadata.name",
+          columns: {
+            Name: {
+              function: getName,
             },
-            {
-              header: "Namespace",
-              function: "return entity_row.attributes.metadata.namespace",
+            Namespace: {
+              function: getNamespace,
             },
-            { header: "State", function: "return entity_row.state" },
-          ],
+            State: { function: "return entity_row.state" },
+          },
           filter_functions: [filterByPage, filterByNamespace],
         };
       case "DaemonSet":
         return {
-          columns: [
-            {
-              header: "Name",
-              function: "return entity_row.attributes.metadata.name",
+          columns: {
+            Name: {
+              function: getName,
             },
-            {
-              header: "Namespace",
-              function: "return entity_row.attributes.metadata.namespace",
+            Namespace: {
+              function: getNamespace,
             },
-            { header: "State", function: "return entity_row.state" },
-          ],
+            State: { function: "return entity_row.state" },
+          },
           filter_functions: [filterByPage, filterByNamespace],
         };
       case "Pod":
         return {
-          columns: [
-            {
-              header: "Name",
-              function: "return entity_row.attributes.metadata.name",
+          columns: {
+            Name: {
+              function: getName,
             },
-            {
-              header: "Namespace",
-              function: "return entity_row.attributes.metadata.namespace",
+            Namespace: {
+              function: getNamespace,
             },
-            {
-              header: "Node",
+            Node: {
               function: "return entity_row.attributes.spec.node_name",
             },
-            { header: "State", function: "return entity_row.state" },
-          ],
+            State: { function: "return entity_row.state" },
+          },
           filter_functions: [filterByPage, filterByNamespace],
         };
     }
