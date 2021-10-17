@@ -13,7 +13,8 @@
     "ms-python.python",
     "github.vscode-pull-request-github",
     "ryanluker.vscode-coverage-gutters",
-    "ms-python.vscode-pylance"
+    "ms-python.vscode-pylance",
+    "esbenp.prettier-vscode"
   ],
   "settings": {
     "files.eol": "\n",
@@ -28,10 +29,11 @@
       "import-error"
     ],
     "python.formatting.provider": "black",
-    "[python]": {
-      "editor.formatOnPaste": false,
-      "editor.formatOnSave": true,
-      "editor.formatOnType": true,
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "files.trimTrailingWhitespace": true
   }

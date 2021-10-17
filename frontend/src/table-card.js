@@ -1,10 +1,6 @@
-import {
-  LitElement,
-  html,
-  css,
-} from "lit";
+import { LitElement, html, css } from "lit";
 
-import { moreInfo } from "card-tools/src/more-info"
+import { moreInfo } from "card-tools/src/more-info";
 
 export class TableCard extends LitElement {
   static get properties() {
@@ -13,9 +9,11 @@ export class TableCard extends LitElement {
       narrow: { type: Boolean },
       route: { type: Object },
       panel: { type: Object },
-      _config: { hasChanged(newVal, oldVal){
-        return true;
-      }}
+      _config: {
+        hasChanged(newVal, oldVal) {
+          return true;
+        },
+      },
     };
   }
 
@@ -46,15 +44,14 @@ export class TableCard extends LitElement {
 
   getData() {
     var data = [];
-    Object.values(this.hass.states).
-      filter(state => {
+    Object.values(this.hass.states)
+      .filter((state) => {
         if (this.config.filter_functions) {
           for (const filter_function of this.config.filter_functions) {
             var func;
-            if (typeof filter_function === 'function') {
+            if (typeof filter_function === "function") {
               func = filter_function;
-            }
-            else {
+            } else {
               func = Function("entity_row", filter_function);
             }
 
@@ -64,23 +61,22 @@ export class TableCard extends LitElement {
           }
         }
         return true;
-      }).
-      forEach(state => {
+      })
+      .forEach((state) => {
         var obj = {
           _entityID: state.entity_id,
         };
-        this.config.columns.forEach(column => {
+        this.config.columns.forEach((column) => {
           if (column.function) {
             var func = Function("entity_row", column.function);
             obj[column.header] = func(state);
-          }
-          else {
+          } else {
             obj[column.header] = "";
           }
         });
 
         data.push(obj);
-      })
+      });
 
     return data;
   }
@@ -109,44 +105,50 @@ export class TableCard extends LitElement {
     this.sortData(data);
 
     return html`
-    <ha-card>
-      ${this.config.header ?
-        html`<h1 class="card-header">${this.config.header.title}</h1>` :
-        html``
-      }
-      <table>
-      <tr class="table-header">
-        ${this.config.columns.map(column => {
-        return html`
-          <th class="table-header-cell ${(this.sort.by == column.header) ? `sort-by` : ``}" @click="${(e) => {
-            this.sort = {
-              by: column.header,
-              DESC: this.sort.by == column.header && !this.sort.DESC
-            };
+      <ha-card>
+        ${this.config.header
+          ? html`<h1 class="card-header">${this.config.header.title}</h1>`
+          : html``}
+        <table>
+          <tr class="table-header">
+            ${this.config.columns.map((column) => {
+              return html`
+                <th
+                  class="table-header-cell ${this.sort.by == column.header
+                    ? `sort-by`
+                    : ``}"
+                  @click="${(e) => {
+                    this.sort = {
+                      by: column.header,
+                      DESC: this.sort.by == column.header && !this.sort.DESC,
+                    };
 
-            this.requestUpdate()
-          }}"><h4>${column.header}</h4></th>
-          `;
-      })}
-      </tr>
+                    this.requestUpdate();
+                  }}"
+                >
+                  <h4>${column.header}</h4>
+                </th>
+              `;
+            })}
+          </tr>
 
-      ${data.map(row => {
-        return html`
-          <tr class="table-row" @click="${(e) => {
-            moreInfo(row._entityID);
-          }}">
-          ${Object.keys(row).map(header => {
-            if (header.startsWith("_")) {
-              return html``;
-            }
-            return html`
-              <th class="table-cell">${row[header]}</th>
-            `;
+          ${data.map((row) => {
+            return html` <tr
+              class="table-row"
+              @click="${(e) => {
+                moreInfo(row._entityID);
+              }}"
+            >
+              ${Object.keys(row).map((header) => {
+                if (header.startsWith("_")) {
+                  return html``;
+                }
+                return html` <th class="table-cell">${row[header]}</th> `;
+              })}
+            </tr>`;
           })}
-          </tr>`
-      })}
-      </table>
-    </ha-card>
+        </table>
+      </ha-card>
     `;
   }
 
