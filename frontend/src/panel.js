@@ -47,7 +47,7 @@ class KubernetesPanel extends LitElement {
             Name: {
               function: getName,
             },
-            Schedualable: {
+            Schedulable: {
               function: getNodeSchedulable,
               transformation: getNodeSchedulableIcon,
               state_function: getNodeSchedulableStateClass,
