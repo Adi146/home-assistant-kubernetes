@@ -3,6 +3,7 @@ import { haStyle } from "../home-assistant/src/resources/styles.ts";
 import { fireEvent } from "card-tools/src/event";
 
 import "./table-card.js";
+import "./node-card.js";
 import "./namespace-selector.js";
 import {
   getName,
@@ -43,6 +44,9 @@ class KubernetesPanel extends LitElement {
     switch (this._page) {
       case "Node":
         return {
+          popUpCard: {
+            type: "custom:node-card",
+          },
           columns: {
             Name: {
               function: getName,

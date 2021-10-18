@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import { moreInfo } from "card-tools/src/more-info";
+import { popUp } from "card-tools/src/popup";
 
 export class TableCard extends LitElement {
   static get properties() {
@@ -147,7 +148,18 @@ export class TableCard extends LitElement {
             return html` <tr
               class="table-row"
               @click="${(e) => {
-                moreInfo(row._entityID);
+                if (this.config.popUpCard) {
+                  var cardConfig = this.config.popUpCard;
+                  cardConfig.entity = row._entityID;
+
+                  popUp(
+                    `Node: ${Object.values(row)[1].value}`,
+                    this.config.popUpCard,
+                    true
+                  );
+                } else {
+                  moreInfo(row._entityID);
+                }
               }}"
             >
               ${Object.keys(this.config.columns).map((header) => {
