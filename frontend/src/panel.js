@@ -8,12 +8,12 @@ import "./namespace-selector.js";
 import {
   getName,
   getNamespace,
-  getNodeConditions,
-  getNodeConditionsStateClass,
+  getConditions,
+  getConditionsAsSpans,
   getNodeSchedulable,
   getNodeSchedulableIcon,
   getNodeSchedulableStateClass,
-} from "./table-functions.js";
+} from "./helpers.js";
 
 class KubernetesPanel extends LitElement {
   constructor() {
@@ -45,7 +45,7 @@ class KubernetesPanel extends LitElement {
       case "Node":
         return {
           popUpCard: {
-            type: "custom:node-card",
+            type: "custom:k8s-component-details",
           },
           columns: {
             Name: {
@@ -57,14 +57,17 @@ class KubernetesPanel extends LitElement {
               state_function: getNodeSchedulableStateClass,
             },
             Conditions: {
-              function: getNodeConditions,
-              state_function: getNodeConditionsStateClass,
+              function: getConditions,
+              transformation: getConditionsAsSpans,
             },
           },
           filter_functions: [filterByPage],
         };
       case "Deployment":
         return {
+          popUpCard: {
+            type: "custom:k8s-component-details",
+          },
           columns: {
             Name: {
               function: getName,

@@ -12,32 +12,15 @@ export function getNamespace(entity_row) {
   return entity_row.attributes.metadata.namespace;
 }
 
-export function getNodeConditions(entity_row) {
-  var status = [];
+export function getConditions(entity_row) {
+  var conditions = [];
   for (const condition of entity_row.attributes.status.conditions) {
     if (condition.status === "True") {
-      status.push(condition.type);
-    }
-  }
-  return status.join(", ");
-}
-
-export function getNodeConditionsStateClass(entity_row) {
-  var status = [];
-  for (const condition of entity_row.attributes.status.conditions) {
-    if (condition.status === "True") {
-      status.push(condition.type);
+      conditions.push(condition.type);
     }
   }
 
-  if (status.includes("Ready")) {
-    if (status.length == 1) {
-      return stateSuccess;
-    } else {
-      return stateWarning;
-    }
-  }
-  return stateError;
+  return conditions;
 }
 
 export function getNodeSchedulable(entity_row) {
@@ -58,4 +41,28 @@ export function getNodeSchedulableStateClass(entity_row) {
   } else {
     return stateError;
   }
+}
+
+export function getConditionStateMapper(condition) {
+  var conditionStateMap = {
+    NetworkUnavailable: stateError,
+    MemoryPressure: stateWarning,
+    DiskPressure: stateWarning,
+    PIDPressure: stateWarning,
+    Ready: stateSuccess,
+    Available: stateSuccess,
+    Progressing: stateSuccess,
+  };
+
+  return conditionStateMap[condition];
+}
+
+export function getConditionsAsSpans(array) {
+  return html`
+    ${array.map((value) => {
+      return html`
+        <span class="${getConditionStateMapper(value)}">${value}</span>
+      `;
+    })}
+  `;
 }
