@@ -144,6 +144,7 @@ export class TableCard extends LitElement {
 
           ${data.map((row) => {
             return html` <tr
+              class="table-row"
               @click="${(e) => {
                 if (this.config.popUpCard) {
                   var cardConfig = this.config.popUpCard;
@@ -186,12 +187,9 @@ export class TableCard extends LitElement {
       th {
         font-weight: bold;
         text-transform: uppercase;
-        cursor: pointer;
       }
-      td {
+      tr {
         text-align: center;
-      }
-      .table-row {
         cursor: pointer;
       }
       .table-row:hover {
