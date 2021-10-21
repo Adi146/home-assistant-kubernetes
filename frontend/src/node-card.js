@@ -79,7 +79,7 @@ export class ComponentDetailsCard extends LitElement {
   }
 
   renderConditions(entity) {
-    if (!entity.attributes.status) return;
+    if (!entity.attributes.status.conditions) return;
     return html`
       <tr>
         <th>Conditions</th>
@@ -171,19 +171,38 @@ export class ComponentDetailsCard extends LitElement {
   }
 
   renderReplicas(entity) {
-    if (!entity.attributes.status.replicas) return;
+    if (
+      !entity.attributes.status.replicas &&
+      !entity.attributes.status.desired_number_scheduled
+    )
+      return;
     return html`
       <tr>
-        <th>Replicas</th>
+        <th>Pods</th>
         <td>
-          <div>Desired: ${entity.attributes.status.replicas}</div>
-          <div>Ready: ${entity.attributes.status.ready_replicas}</div>
-          <div>Updated: ${entity.attributes.status.updated_replicas}</div>
+          <div>
+            Desired:
+            ${entity.attributes.status.replicas ??
+            entity.attributes.status.desired_number_scheduled ??
+            0}
+          </div>
+          <div>
+            Ready:
+            ${entity.attributes.status.ready_replicas ??
+            entity.attributes.status.number_ready ??
+            0}
+          </div>
+          <div>
+            Updated:
+            ${entity.attributes.status.updated_replicas ??
+            entity.attributes.status.updated_number_scheduled ??
+            0}
+          </div>
           <div>
             Unavailable:
-            ${entity.attributes.status.unavailable_replicas
-              ? entity.attributes.status.unavailable_replicas
-              : 0}
+            ${entity.attributes.status.unavailable_replicas ??
+            entity.attributes.status.number_unavailable ??
+            0}
           </div>
         </td>
       </tr>
@@ -207,12 +226,20 @@ export class ComponentDetailsCard extends LitElement {
   }
 
   renderStrategy(entity) {
-    if (!entity.attributes.spec.strategy) return;
+    if (
+      !entity.attributes.spec.strategy &&
+      !entity.attributes.spec.update_strategy
+    )
+      return;
     return html`
       <tr>
         <th>Strategy</th>
         <td>
-          <div>${entity.attributes.spec.strategy.type}</div>
+          <div>
+            ${entity.attributes.spec.strategy
+              ? entity.attributes.spec.strategy.type
+              : entity.attributes.spec.update_strategy.type}
+          </div>
         </td>
       </tr>
     `;
