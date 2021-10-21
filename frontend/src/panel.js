@@ -81,6 +81,9 @@ class KubernetesPanel extends LitElement {
         };
       case "DaemonSet":
         return {
+          popUpCard: {
+            type: "custom:k8s-component-details",
+          },
           columns: {
             Name: {
               function: getName,
