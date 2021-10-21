@@ -32,7 +32,11 @@
     "editor.formatOnPaste": false,
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
+    "[python]": {
+      "editor.tabSize": 4,
+    },
     "[javascript]": {
+      "editor.tabSize": 2,
       "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "files.trimTrailingWhitespace": true
