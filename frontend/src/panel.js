@@ -3,7 +3,7 @@ import { haStyle } from "../home-assistant/src/resources/styles.ts";
 import { fireEvent } from "card-tools/src/event";
 
 import "./table-card.js";
-import "./node-card.js";
+import "./component-details-card.js";
 import "./namespace-selector.js";
 import {
   getName,
