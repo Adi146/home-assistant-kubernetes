@@ -122,13 +122,11 @@ export class TableCard extends LitElement {
           ? html`<h1 class="card-header">${this.config.header.title}</h1>`
           : html``}
         <table>
-          <tr class="table-header">
+          <tr>
             ${Object.keys(this.config.columns).map((header) => {
               return html`
                 <th
-                  class="table-header-cell ${this.sort.by == header
-                    ? `sort-by`
-                    : ``}"
+                  class="${this.sort.by == header ? `sort-by` : ``}"
                   @click="${(e) => {
                     this.sort = {
                       by: header,
@@ -146,7 +144,6 @@ export class TableCard extends LitElement {
 
           ${data.map((row) => {
             return html` <tr
-              class="table-row"
               @click="${(e) => {
                 if (this.config.popUpCard) {
                   var cardConfig = this.config.popUpCard;
@@ -164,13 +161,13 @@ export class TableCard extends LitElement {
             >
               ${Object.keys(this.config.columns).map((header) => {
                 return html`
-                  <th class="table-cell ${row[header].state}">
+                  <td class="${row[header].state}">
                     ${this.getAsFunction(
                       this.config.columns[header].transformation,
                       html`${row[header].value}`,
                       "value"
                     )(row[header].value)}
-                  </th>
+                  </td>
                 `;
               })}
             </tr>`;
@@ -186,10 +183,13 @@ export class TableCard extends LitElement {
         width: 100%;
         background-color: var(--table-row-background-color);
       }
-      .table-header {
+      th {
         font-weight: bold;
         text-transform: uppercase;
         cursor: pointer;
+      }
+      td {
+        text-align: center;
       }
       .table-row {
         cursor: pointer;
