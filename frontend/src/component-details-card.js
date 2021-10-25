@@ -25,9 +25,9 @@ export class ComponentDetailsCard extends LitElement {
   renderNamespace(entity) {
     if (!entity.attributes.metadata.namespace) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Namespace</th>
-        <td>
+        <td colspan="2">
           <div>${getNamespace(entity)}</div>
         </td>
       </tr>
@@ -37,9 +37,9 @@ export class ComponentDetailsCard extends LitElement {
   renderCreationTimestamp(entity) {
     if (!entity.attributes.metadata.creation_timestamp) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Created</th>
-        <td>
+        <td colspan="2">
           <div>${entity.attributes.metadata.creation_timestamp}</div>
         </td>
       </tr>
@@ -49,9 +49,9 @@ export class ComponentDetailsCard extends LitElement {
   renderLabels(entity) {
     if (!entity.attributes.metadata.labels) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Labels</th>
-        <td>
+        <td colspan="2">
           ${Object.entries(entity.attributes.metadata.labels).map((label) => {
             var text = label.filter((val) => val != "").join("=");
             return html`<div title=${text}>${text}</div>`;
@@ -64,9 +64,9 @@ export class ComponentDetailsCard extends LitElement {
   renderAnnotations(entity) {
     if (!entity.attributes.metadata.annotations) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Annotations</th>
-        <td>
+        <td colspan="2">
           ${Object.entries(entity.attributes.metadata.annotations).map(
             (label) => {
               var text = label.filter((val) => val != "").join("=");
@@ -81,9 +81,9 @@ export class ComponentDetailsCard extends LitElement {
   renderConditions(entity) {
     if (!entity.attributes.status.conditions) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Conditions</th>
-        <td>${getConditionsAsSpans(getConditions(entity))}</td>
+        <td colspan="2">${getConditionsAsSpans(getConditions(entity))}</td>
       </tr>
     `;
   }
@@ -91,9 +91,9 @@ export class ComponentDetailsCard extends LitElement {
   renderCapacity(entity) {
     if (!entity.attributes.status.capacity) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Capicity</th>
-        <td>
+        <td colspan="2">
           <div>CPU: ${entity.attributes.status.capacity.cpu}</div>
           <div>Memory: ${entity.attributes.status.capacity.memory}</div>
           <div>Pods: ${entity.attributes.status.capacity.pods}</div>
@@ -105,9 +105,9 @@ export class ComponentDetailsCard extends LitElement {
   renderAllocatable(entity) {
     if (!entity.attributes.status.allocatable) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Allocatable</th>
-        <td>
+        <td colspan="2">
           <div>CPU: ${entity.attributes.status.allocatable.cpu}</div>
           <div>Memory: ${entity.attributes.status.allocatable.memory}</div>
           <div>Pods: ${entity.attributes.status.capacity.pods}</div>
@@ -119,9 +119,9 @@ export class ComponentDetailsCard extends LitElement {
   renderAddresses(entity) {
     if (!entity.attributes.status.addresses) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Addresses</th>
-        <td>
+        <td colspan="2">
           ${entity.attributes.status.addresses.map((address) => {
             return html`<div>${address.type}: ${address.address}</div>`;
           })}
@@ -133,9 +133,9 @@ export class ComponentDetailsCard extends LitElement {
   renderOS(entity) {
     if (!entity.attributes.status.node_info) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>OS</th>
-        <td>
+        <td colspan="2">
           <div>
             Architecture: ${entity.attributes.status.node_info.architecture}
           </div>
@@ -154,9 +154,9 @@ export class ComponentDetailsCard extends LitElement {
   renderKubernetes(entity) {
     if (!entity.attributes.status.node_info) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Kubernetes</th>
-        <td>
+        <td colspan="2">
           <div>
             Kubelet Version:
             ${entity.attributes.status.node_info.kubelet_version}
@@ -177,9 +177,9 @@ export class ComponentDetailsCard extends LitElement {
     )
       return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Pods</th>
-        <td>
+        <td colspan="2">
           <div>
             Desired:
             ${entity.attributes.status.replicas ??
@@ -212,9 +212,9 @@ export class ComponentDetailsCard extends LitElement {
   renderSelector(entity) {
     if (!entity.attributes.spec.selector) return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Selector</th>
-        <td>
+        <td colspan="2">
           ${Object.entries(entity.attributes.spec.selector.match_labels).map(
             (label) => {
               return html`<div>${label.join("=")}</div>`;
@@ -232,15 +232,73 @@ export class ComponentDetailsCard extends LitElement {
     )
       return;
     return html`
-      <tr>
+      <tr class="section">
         <th>Strategy</th>
-        <td>
+        <td colspan="2">
           <div>
             ${entity.attributes.spec.strategy
               ? entity.attributes.spec.strategy.type
               : entity.attributes.spec.update_strategy.type}
           </div>
         </td>
+      </tr>
+    `;
+  }
+
+  renderNode(entity) {
+    if (!entity.attributes.spec.node_name) return;
+    return html`
+      <tr class="section">
+        <th>Node</th>
+        <td colspan="2">
+          <div>${entity.attributes.spec.node_name}</div>
+        </td>
+      </tr>
+    `;
+  }
+
+  renderContainerStatus(entity) {
+    if (!entity.attributes.status.container_statuses) return;
+    return html`
+      <tr class="section">
+        <th rowspan="${entity.attributes.status.container_statuses}">
+          Containers
+        </th>
+        ${entity.attributes.status.container_statuses.map(
+          (container, index) => {
+            var stateRow = html`
+              <td>${container.name}</td>
+              <td>
+                <div>Image: ${container.image}</div>
+                <div>Restart Counter: ${container.restart_count}</div>
+                ${container.state.running
+                  ? html`<div>
+                      Start Time:
+                      <span class="container_state success">
+                        ${container.state.running.started_at}
+                      </span>
+                    </div>`
+                  : html``}
+                ${container.state.waiting
+                  ? html`<div>
+                      Wait Reason:
+                      <span class="container_state error">
+                        ${container.state.waiting.reason}
+                      </span>
+                    </div>`
+                  : html``}
+              </td>
+            `;
+
+            return html`
+              ${index == 0
+                ? stateRow
+                : html`<tr>
+                    ${stateRow}
+                  </tr>`}
+            `;
+          }
+        )}
       </tr>
     `;
   }
@@ -267,11 +325,13 @@ export class ComponentDetailsCard extends LitElement {
               ${this.renderAllocatable(entity)} ${this.renderAddresses(entity)}
               ${this.renderOS(entity)} ${this.renderKubernetes(entity)}
               ${this.renderReplicas(entity)}
+              ${this.renderContainerStatus(entity)}
             `
           : html``}
         ${entity.attributes.spec
           ? html`
               ${this.renderSelector(entity)} ${this.renderStrategy(entity)}
+              ${this.renderNode(entity)}
             `
           : html``}
       </table>
@@ -285,14 +345,14 @@ export class ComponentDetailsCard extends LitElement {
         border-collapse: collapse;
         table-layout: fixed;
       }
-      tr {
-        border: solid;
+      .section {
+        border-top: solid;
         border-width: 1px 0;
       }
-      tr:first-child {
+      .section:first-child {
         border-top: none;
       }
-      tr:last-child {
+      .section:last-child {
         border-bottom: none;
       }
       th {
@@ -307,13 +367,22 @@ export class ComponentDetailsCard extends LitElement {
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      .success {
-        color: var(--success-color);
+      .condition {
+        border-radius: 25px;
+        padding: 5px;
+        margin: 2px 0px;
+        display: inline-block;
       }
-      .warning {
-        color: var(--warning-color);
+      .condition.success {
+        background-color: var(--success-color);
       }
-      .error {
+      .condition.warning {
+        background-color: var(--warning-color);
+      }
+      .condition.error {
+        background-color: var(--error-color);
+      }
+      .container_state.error {
         color: var(--error-color);
       }
     `;

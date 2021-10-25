@@ -1,4 +1,5 @@
 import { html } from "lit";
+import { state } from "lit-element";
 
 const stateError = "error";
 const stateWarning = "warning";
@@ -13,14 +14,7 @@ export function getNamespace(entity_row) {
 }
 
 export function getConditions(entity_row) {
-  var conditions = [];
-  for (const condition of entity_row.attributes.status.conditions) {
-    if (condition.status === "True") {
-      conditions.push(condition.type);
-    }
-  }
-
-  return conditions;
+  return entity_row.attributes.status.conditions;
 }
 
 export function getNodeSchedulable(entity_row) {
@@ -45,23 +39,58 @@ export function getNodeSchedulableStateClass(entity_row) {
 
 export function getConditionStateMapper(condition) {
   var conditionStateMap = {
-    NetworkUnavailable: stateError,
-    MemoryPressure: stateWarning,
-    DiskPressure: stateWarning,
-    PIDPressure: stateWarning,
-    Ready: stateSuccess,
-    Available: stateSuccess,
-    Progressing: stateSuccess,
+    NetworkUnavailable: {
+      True: stateError,
+      False: stateSuccess,
+    },
+    MemoryPressure: {
+      True: stateWarning,
+      False: stateSuccess,
+    },
+    DiskPressure: {
+      True: stateWarning,
+      False: stateSuccess,
+    },
+    PIDPressure: {
+      True: stateWarning,
+      False: stateSuccess,
+    },
+    Ready: {
+      True: stateSuccess,
+      False: stateError,
+    },
+    Available: {
+      True: stateSuccess,
+      False: stateError,
+    },
+    Progressing: {
+      True: stateSuccess,
+      False: stateError,
+    },
+    Initialized: {
+      True: stateSuccess,
+      False: stateError,
+    },
+    ContainersReady: {
+      True: stateSuccess,
+      False: stateError,
+    },
+    PodScheduled: {
+      True: stateSuccess,
+      False: stateError,
+    },
   };
 
-  return conditionStateMap[condition];
+  return conditionStateMap[condition.type][condition.status];
 }
 
-export function getConditionsAsSpans(array) {
+export function getConditionsAsSpans(conditions) {
   return html`
-    ${array.map((value) => {
+    ${conditions.map((condition) => {
       return html`
-        <span class="${getConditionStateMapper(value)}">${value}</span>
+        <span class="condition ${getConditionStateMapper(condition)}">
+          ${condition.reason ? condition.reason : condition.type}
+        </span>
       `;
     })}
   `;

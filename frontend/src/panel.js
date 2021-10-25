@@ -97,6 +97,9 @@ class KubernetesPanel extends LitElement {
         };
       case "Pod":
         return {
+          popUpCard: {
+            type: "custom:k8s-component-details",
+          },
           columns: {
             Name: {
               function: getName,
@@ -108,6 +111,10 @@ class KubernetesPanel extends LitElement {
               function: "return entity_row.attributes.spec.node_name",
             },
             State: { function: "return entity_row.state" },
+            Conditions: {
+              function: getConditions,
+              transformation: getConditionsAsSpans,
+            },
           },
           filter_functions: [filterByPage, filterByNamespace],
         };
