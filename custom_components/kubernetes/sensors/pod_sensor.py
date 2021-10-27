@@ -34,4 +34,9 @@ class PodSensor(KubernetesEntity, SensorEntity):
 
     @property
     def state(self) -> str:
+        for container_status in self.getData().status.container_statuses:
+            if container_status.state.waiting is not None:
+                return container_status.state.waiting.reason
+
         return self.getData().status.phase
+
