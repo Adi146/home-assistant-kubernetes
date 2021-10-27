@@ -58,6 +58,7 @@ export function getConditionStateMapper(condition) {
     Ready: {
       True: stateSuccess,
       False: stateError,
+      PodCompleted: stateSuccess,
     },
     Available: {
       True: stateSuccess,
@@ -74,6 +75,7 @@ export function getConditionStateMapper(condition) {
     ContainersReady: {
       True: stateSuccess,
       False: stateError,
+      PodCompleted: stateSuccess,
     },
     PodScheduled: {
       True: stateSuccess,
@@ -81,7 +83,7 @@ export function getConditionStateMapper(condition) {
     },
   };
 
-  return conditionStateMap[condition.type][condition.status];
+  return conditionStateMap[condition.type][condition.reason] ?? conditionStateMap[condition.type][condition.status];
 }
 
 export function getConditionsAsSpans(conditions) {
