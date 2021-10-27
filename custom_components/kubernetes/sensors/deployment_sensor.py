@@ -17,7 +17,7 @@ from ..const import (
     PARAM_IMAGE,
     KUBERNETES_KIND_DEPLOYMENT,
 )
-from ..kubernetes_entity import KubernetesEntity, async_cleanup_registry
+from ..kubernetes_entity import KubernetesEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,10 +30,6 @@ async def async_setup_entry(
     platform = entity_platform.async_get_current_platform()
 
     hub = hass.data[DOMAIN][entry.entry_id]
-
-    await async_cleanup_registry(
-        hass, entry, KUBERNETES_KIND_DEPLOYMENT, hub.list_deployments_func()
-    )
 
     await hub.async_start_listener(
         async_add_entities, hub.list_deployments_func(), DeploymentSensor
@@ -56,6 +52,10 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
     @property
     def state(self) -> str:
         return self.getData().status.ready_replicas
+
+    @staticmethod
+    def kind() -> str:
+        return KUBERNETES_KIND_DEPLOYMENT
 
     async def set_image(self, container: str, image: str) -> None:
         await self.hub.set_image(

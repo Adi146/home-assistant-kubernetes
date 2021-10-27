@@ -3,31 +3,10 @@ from __future__ import annotations
 import logging
 
 from homeassistant.core import HomeAssistant
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import Entity, generate_entity_id
-from homeassistant.helpers.entity_registry import (
-    async_get_registry,
-    async_entries_for_config_entry,
-)
 
 
 _LOGGER = logging.getLogger(__name__)
-
-
-async def async_cleanup_registry(
-    hass: HomeAssistant, entry: ConfigEntry, kind: str, list_func
-):
-    response = await list_func()
-
-    registry = await async_get_registry(hass)
-    for entity in async_entries_for_config_entry(registry, entry.entry_id):
-        if entity.device_class == kind:
-            for resource in response.items:
-                if entity.unique_id == resource.metadata.uid:
-                    break
-            else:
-                _LOGGER.warning(f"removing dead entity {entity.entity_id}")
-                registry.async_remove(entity.entity_id)
 
 
 def obj_to_dict(obj):
@@ -82,10 +61,6 @@ class KubernetesEntity(Entity):
             return f"{self.getData().kind}_{self.getData().metadata.namespace}_{self.getData().metadata.name}"
         else:
             return f"{self.getData().kind}_{self.getData().metadata.name}"
-
-    async def async_delete(self):
-        registry = await async_get_registry(self.hub.hass)
-        registry.async_remove(self.entity_id)
 
     @property
     def extra_state_attributes(self) -> dict:

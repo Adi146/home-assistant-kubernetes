@@ -10,6 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import config_validation as cv, entity_platform
 
+from ..kubernetes_entity import KubernetesEntity
 from ..const import (
     DOMAIN,
     SERVICE_SET_IMAGE_DAEMONSET,
@@ -17,7 +18,6 @@ from ..const import (
     PARAM_IMAGE,
     KUBERNETES_KIND_DAEMONSET,
 )
-from ..kubernetes_entity import KubernetesEntity, async_cleanup_registry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,10 +30,6 @@ async def async_setup_entry(
     platform = entity_platform.async_get_current_platform()
 
     hub = hass.data[DOMAIN][entry.entry_id]
-
-    await async_cleanup_registry(
-        hass, entry, KUBERNETES_KIND_DAEMONSET, hub.list_daemon_sets_func()
-    )
 
     await hub.async_start_listener(
         async_add_entities, hub.list_daemon_sets_func(), DaemonSetSensor
@@ -56,6 +52,10 @@ class DaemonSetSensor(KubernetesEntity, SensorEntity):
     @property
     def state(self) -> str:
         return self.getData().status.number_ready
+
+    @staticmethod
+    def kind() -> str:
+        return KUBERNETES_KIND_DAEMONSET
 
     async def set_image(self, container: str, image: str) -> None:
         await self.hub.set_image(

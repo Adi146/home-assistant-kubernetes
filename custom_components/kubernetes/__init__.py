@@ -25,7 +25,7 @@ async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
 ) -> bool:
-    hub = KubernetesHub(hass)
+    hub = KubernetesHub(hass, entry)
     hass.data[DOMAIN][entry.entry_id] = hub
 
     await hub.async_start()

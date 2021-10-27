@@ -11,7 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import config_validation as cv, entity_platform
 
 from ..const import DOMAIN, KUBERNETES_KIND_POD
-from ..kubernetes_entity import KubernetesEntity, async_cleanup_registry
+from ..kubernetes_entity import KubernetesEntity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,8 +23,6 @@ async def async_setup_entry(
 ) -> None:
     hub = hass.data[DOMAIN][entry.entry_id]
 
-    await async_cleanup_registry(hass, entry, KUBERNETES_KIND_POD, hub.list_pods_func())
-
     await hub.async_start_listener(async_add_entities, hub.list_pods_func(), PodSensor)
 
 
@@ -34,9 +32,13 @@ class PodSensor(KubernetesEntity, SensorEntity):
 
     @property
     def state(self) -> str:
-        for container_status in self.getData().status.container_statuses:
-            if container_status.state.waiting is not None:
-                return container_status.state.waiting.reason
+        if self.getData().status.container_statuses is not None:
+            for container_status in self.getData().status.container_statuses:
+                if container_status.state.waiting is not None:
+                    return container_status.state.waiting.reason
 
         return self.getData().status.phase
 
+    @staticmethod
+    def kind() -> str:
+        return KUBERNETES_KIND_POD
