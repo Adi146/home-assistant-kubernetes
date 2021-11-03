@@ -52,7 +52,12 @@ class NodeSensor(KubernetesEntity, SensorEntity):
 
     @property
     def state(self) -> str:
-        return STATE_UNSCHEDULABLE if self.getData().spec.unschedulable else STATE_READY
+        if self.getData().spec.unschedulable:
+            return STATE_UNSCHEDULABLE
+
+        for condition in self.getData().status.conditions:
+            if condition.type == "Ready":
+                return condition.reason
 
     @staticmethod
     def kind() -> str:

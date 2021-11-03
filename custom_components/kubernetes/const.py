@@ -18,7 +18,7 @@ PARAM_IMAGE = "image"
 PARAM_UNSCHEDULABLE = "unschedulable"
 
 STATE_READY = "ready"
-STATE_UNSCHEDULABLE = "unschedulable"
+STATE_UNSCHEDULABLE = "Unschedulable"
 
 KUBERNETES_KIND_NODE = "Node"
 KUBERNETES_KIND_DEPLOYMENT = "Deployment"
