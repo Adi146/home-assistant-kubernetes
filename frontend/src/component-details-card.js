@@ -1,10 +1,14 @@
 import { LitElement, html, css } from "lit";
 
 import {
-  getConditions,
   getConditionsAsSpans,
   getName,
   getNamespace,
+  getCreated,
+  getAgeStr,
+  getNodeName,
+  getDesiredReplicas,
+  getReadyReplicas,
 } from "./helpers.js";
 
 export class ComponentDetailsCard extends LitElement {
@@ -40,7 +44,9 @@ export class ComponentDetailsCard extends LitElement {
       <tr class="section">
         <th>Created</th>
         <td colspan="2">
-          <div>${entity.attributes.metadata.creation_timestamp}</div>
+          <div>
+            ${getCreated(entity).toLocaleString()} (${getAgeStr(entity)} ago)
+          </div>
         </td>
       </tr>
     `;
@@ -83,7 +89,7 @@ export class ComponentDetailsCard extends LitElement {
     return html`
       <tr class="section">
         <th>Conditions</th>
-        <td colspan="2">${getConditionsAsSpans(getConditions(entity))}</td>
+        <td colspan="2">${getConditionsAsSpans(entity)}</td>
       </tr>
     `;
   }
@@ -180,18 +186,8 @@ export class ComponentDetailsCard extends LitElement {
       <tr class="section">
         <th>Pods</th>
         <td colspan="2">
-          <div>
-            Desired:
-            ${entity.attributes.status.replicas ??
-            entity.attributes.status.desired_number_scheduled ??
-            0}
-          </div>
-          <div>
-            Ready:
-            ${entity.attributes.status.ready_replicas ??
-            entity.attributes.status.number_ready ??
-            0}
-          </div>
+          <div>Desired: ${getDesiredReplicas(entity)}</div>
+          <div>Ready: ${getReadyReplicas(entity)}</div>
           <div>
             Updated:
             ${entity.attributes.status.updated_replicas ??
@@ -246,12 +242,12 @@ export class ComponentDetailsCard extends LitElement {
   }
 
   renderNode(entity) {
-    if (!entity.attributes.spec.node_name) return;
+    if (!getNodeName(entity)) return;
     return html`
       <tr class="section">
         <th>Node</th>
         <td colspan="2">
-          <div>${entity.attributes.spec.node_name}</div>
+          <div>${getNodeName(entity)}</div>
         </td>
       </tr>
     `;

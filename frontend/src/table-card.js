@@ -76,11 +76,10 @@ export class TableCard extends LitElement {
           _entityID: state.entity_id,
         };
         for (const [header, column] of Object.entries(this.config.columns)) {
-          var func = this.getAsFunction(column.function, "", "entity_row");
           obj[header] = {
-            value: this.getAsFunction(column.function, "", "entity_row")(state),
-            state: this.getAsFunction(
-              column.state_function,
+            value: this.getAsFunction(column.value, "", "entity_row")(state),
+            sortValue: this.getAsFunction(
+              column.sort_value,
               "",
               "entity_row"
             )(state),
@@ -99,8 +98,8 @@ export class TableCard extends LitElement {
     }
 
     data.sort((a, b) => {
-      var valA = this.sort.by in a ? a[this.sort.by].value : 0;
-      var valB = this.sort.by in b ? b[this.sort.by].value : 0;
+      var valA = this.sort.by in a ? a[this.sort.by].sortValue : 0;
+      var valB = this.sort.by in b ? b[this.sort.by].sortValue : 0;
       if (valA < valB) {
         return this.sort.DESC ? 1 : -1;
       }
@@ -162,13 +161,7 @@ export class TableCard extends LitElement {
             >
               ${Object.keys(this.config.columns).map((header) => {
                 return html`
-                  <td class="${row[header].state}">
-                    ${this.getAsFunction(
-                      this.config.columns[header].transformation,
-                      html`${row[header].value}`,
-                      "value"
-                    )(row[header].value)}
-                  </td>
+                  <td class="${row[header].state}">${row[header].value}</td>
                 `;
               })}
             </tr>`;

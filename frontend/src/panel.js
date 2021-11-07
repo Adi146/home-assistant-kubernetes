@@ -6,14 +6,23 @@ import "./table-card.js";
 import "./component-details-card.js";
 import "./namespace-selector.js";
 import {
+  stateSuccess,
+  stateWarning,
+  stateError,
   getName,
   getNamespace,
-  getConditions,
   getConditionsAsSpans,
+  getConditionsStrings,
   getNodeSchedulable,
   getNodeSchedulableIcon,
-  getNodeSchedulableStateClass,
+  getAge,
+  getAgeStr,
+  getState,
+  getNodeName,
+  getReplicaStr,
 } from "./helpers.js";
+
+const componentDetailsCardName = "custom:k8s-component-details";
 
 class KubernetesPanel extends LitElement {
   constructor() {
@@ -43,77 +52,130 @@ class KubernetesPanel extends LitElement {
 
     switch (this._page) {
       case "Node":
+        var conditionFilter = {
+          NetworkUnavailable: stateWarning,
+          MemoryPressure: stateWarning,
+          DiskPressure: stateWarning,
+          PIDPressure: stateWarning,
+        };
+
         return {
           popUpCard: {
-            type: "custom:k8s-component-details",
+            type: componentDetailsCardName,
           },
           columns: {
             Name: {
-              function: getName,
+              value: getName,
+              sort_value: getName,
             },
             Schedulable: {
-              function: getNodeSchedulable,
-              transformation: getNodeSchedulableIcon,
-              state_function: getNodeSchedulableStateClass,
+              value: getNodeSchedulableIcon,
+              sort_value: getNodeSchedulable,
+            },
+            Age: {
+              value: getAgeStr,
+              sort_value: getAge,
             },
             Conditions: {
-              function: getConditions,
-              transformation: getConditionsAsSpans,
+              value: getConditionsAsSpans.bind(conditionFilter),
+              sort_value: getConditionsStrings.bind(conditionFilter),
             },
           },
           filter_functions: [filterByPage],
         };
       case "Deployment":
+        var conditionFilter = {
+          Progressing: stateWarning,
+        };
+
         return {
           popUpCard: {
-            type: "custom:k8s-component-details",
+            type: componentDetailsCardName,
           },
           columns: {
             Name: {
-              function: getName,
+              value: getName,
+              sort_value: getName,
             },
             Namespace: {
-              function: getNamespace,
+              value: getNamespace,
+              sort_value: getNamespace,
             },
-            State: { function: "return entity_row.state" },
+            Replicas: {
+              value: getReplicaStr,
+              sort_value: getReplicaStr,
+            },
+            Age: {
+              value: getAgeStr,
+              sort_value: getAge,
+            },
+            Conditions: {
+              value: getConditionsAsSpans.bind(conditionFilter),
+              sort_value: getConditionsStrings.bind(conditionFilter),
+            },
           },
           filter_functions: [filterByPage, filterByNamespace],
         };
       case "DaemonSet":
         return {
           popUpCard: {
-            type: "custom:k8s-component-details",
+            type: componentDetailsCardName,
           },
           columns: {
             Name: {
-              function: getName,
+              value: getName,
+              sort_value: getName,
             },
             Namespace: {
-              function: getNamespace,
+              value: getNamespace,
+              sort_value: getNamespace,
             },
-            State: { function: "return entity_row.state" },
+            Replicas: {
+              value: getReplicaStr,
+              sort_value: getReplicaStr,
+            },
+            Age: {
+              value: getAgeStr,
+              sort_value: getAge,
+            },
           },
           filter_functions: [filterByPage, filterByNamespace],
         };
       case "Pod":
+        var conditionFilter = {
+          Initialized: stateWarning,
+          ContainersReady: stateWarning,
+          PodScheduled: stateWarning,
+        };
+
         return {
           popUpCard: {
-            type: "custom:k8s-component-details",
+            type: componentDetailsCardName,
           },
           columns: {
             Name: {
-              function: getName,
+              value: getName,
+              sort_value: getName,
             },
             Namespace: {
-              function: getNamespace,
+              value: getNamespace,
+              sort_value: getNamespace,
             },
             Node: {
-              function: "return entity_row.attributes.spec.node_name",
+              value: getNodeName,
+              sort_value: getNodeName,
             },
-            State: { function: "return entity_row.state" },
+            State: {
+              value: getState,
+              sort_value: getState,
+            },
+            Age: {
+              value: getAgeStr,
+              sort_value: getAge,
+            },
             Conditions: {
-              function: getConditions,
-              transformation: getConditionsAsSpans,
+              value: getConditionsAsSpans.bind(conditionFilter),
+              sort_value: getConditionsStrings.bind(conditionFilter),
             },
           },
           filter_functions: [filterByPage, filterByNamespace],
