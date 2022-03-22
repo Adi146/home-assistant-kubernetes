@@ -9,29 +9,3 @@ on:
       - "*"
 
 jobs:
-  build-frontend:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
-          persist-credentials: false
-      # This is needed for npm dependencies from git sources
-      # https://github.com/actions/setup-node/issues/214
-      - name: Reconfigure git to use HTTP authentication
-        run: >
-          git config --global url."https://github.com/".insteadOf
-          ssh://git@github.com/
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./frontend
-      - name: Build the project
-        run: npm run build
-        working-directory: ./frontend

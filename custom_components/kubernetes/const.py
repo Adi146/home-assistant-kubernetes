@@ -7,8 +7,6 @@ DOMAIN: Final = "kubernetes"
 
 CONF_FILE = "./config"
 
-CONFIG_FLOW_PANEL = "panel"
-
 SERVICE_SET_IMAGE_DEPLOYMENT = "set_image_deployment"
 SERVICE_SET_IMAGE_DAEMONSET = "set_image_daemon_set"
 SERVICE_SET_UNSCHEDULABLE = "set_unschedulable"
