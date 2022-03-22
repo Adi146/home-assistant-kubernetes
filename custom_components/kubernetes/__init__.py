@@ -8,7 +8,6 @@ from homeassistant.helpers.typing import ConfigType
 from homeassistant.config_entries import ConfigEntry
 
 from .kubernetes_hub import KubernetesHub
-from .frontend import async_setup_frontend
 
 from .const import DOMAIN
 from .services import async_setup_services, async_unload_services
@@ -32,8 +31,6 @@ async def async_setup_entry(
 
     hass.config_entries.async_setup_platforms(entry, ["sensor"])
     await async_setup_services(hass, hub)
-
-    await async_setup_frontend(hass, entry)
 
     return True
 

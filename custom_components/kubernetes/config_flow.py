@@ -8,7 +8,7 @@ import voluptuous as vol
 from homeassistant import config_entries, exceptions
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, CONFIG_FLOW_PANEL  # pylint:disable=unused-import
+from .const import DOMAIN  # pylint:disable=unused-import
 from .kubernetes_hub import KubernetesHub
 
 _LOGGER = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
-                {vol.Required(CONFIG_FLOW_PANEL, default=True): bool}
+                {}
             ),
             errors=errors,
         )
