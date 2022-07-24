@@ -87,10 +87,6 @@ class KubernetesHub:
                     resource = event["object"]
                     eventType = event["type"]
 
-                    _LOGGER.warning(
-                        f"{resource.kind} {eventType} {resource.metadata.name}"
-                    )
-
                     if eventType == "ADDED" and resource.metadata.uid not in entities:
                         sensor = entity_class(self, resource)
                         entities[resource.metadata.uid] = sensor

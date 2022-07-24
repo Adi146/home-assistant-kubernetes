@@ -22,7 +22,7 @@ Following components are supported at the moment:
 - Pods
 
 The sensors will be named with this schema: _kind__*namespace*__name_. For example a Pod sensor could be named *sensor.deployment_homeassistant_homeassistant_db*
-You can find further details of the component in the attributes of the sensor. If you want to monitor specific details of a sensor you can create a template sensor like that: 
+You can find further details of the component in the attributes of the sensor. If you want to monitor specific details of a sensor you can create a template sensor like that:
 
 ```{{ state_attr('sensor.daemonset_glances_glances', 'spec')["template"]["spec"]["containers"][0]["image"] }}```
 
@@ -37,9 +37,9 @@ The integration provides a few service for managing Kubernetes
 Set the unschedulable flag of a Node. Attention this will not drain the node!
 
 ```
-service: kubernetes.set_unschedulable 
-target: 
-  entity_id: sensor.node_pi02 data: 
+service: kubernetes.set_unschedulable
+target:
+  entity_id: sensor.node_pi02 data:
 unschedulable: true
 ```
 
@@ -48,26 +48,10 @@ unschedulable: true
 Sets the image of a Deployment or DaemonSet. This service acts like kubectl set image.
 
 ```
-service: kubernetes.set_image_deployment 
+service: kubernetes.set_image_deployment
 target:
   entity_id: sensor.deployment_homeassistant_homeassistant
-data: 
+data:
   container: homeassistant
   image: homeassistant/home-assistant:2021.10
 ```
-
-## Panel and Cards
-
-Additionally the integration provides a basic custom panel for better overview (This is still under development and there will be big changes).
-There are also a few custom cards which can be added to your lovelace dashboard.
-
-### k8s-component-details
-
-Provides details of a single Kubernetes component.
-
-```
-type: custom:k8s-component-details
-entity: sensor.deployment_homeassistant_homeassistant
-```
-
-![k8s-component-details.png](/images/component-details-card.png)
