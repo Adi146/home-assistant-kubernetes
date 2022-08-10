@@ -65,3 +65,28 @@ class NodeSensor(KubernetesEntity, SensorEntity):
 
     async def set_unschedulable(self, unschedulable: bool) -> None:
         await self.hub.set_unschedulable(self.getData().metadata.name, unschedulable)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+      d = super().extra_state_attributes()
+
+      # Add helpers for node.
+      # Addresses
+      d["addresses"] = d["status"]["addresses"]
+
+      # Conditions
+      d["conditions"] = d["status"]["conditions"]
+
+      # Node info
+      d["architecture"] = d["status"]["node_info"]["architecture"]
+      d["boot_id"] = d["status"]["conditions"]["status"]["node_info"]["boot_id"]
+      d["container_runtime_version"] = d["status"]["conditions"]["status"]["node_info"]["container_runtime_version"]
+      d["kernel_version"] = d["status"]["conditions"]["status"]["node_info"]["kernel_version"]
+      d["kube_proxy_version"] = d["status"]["conditions"]["status"]["node_info"]["kube_proxy_version"]
+      d["kubelet_version"] = d["status"]["conditions"]["status"]["node_info"]["kubelet_version"]
+      d["machine_id"] = d["status"]["conditions"]["status"]["node_info"]["machine_id"]
+      d["operating_system"] = d["status"]["conditions"]["status"]["node_info"]["operating_system"]
+      d["os_image"] = d["status"]["conditions"]["status"]["node_info"]["os_image"]
+      d["system_uuid"] = d["status"]["conditions"]["status"]["node_info"]["system_uuid"]
+
+      return d
