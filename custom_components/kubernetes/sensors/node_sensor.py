@@ -84,9 +84,11 @@ class NodeSensor(KubernetesEntity, SensorEntity):
       d["kernel_version"] = d["status"]["node_info"]["kernel_version"]
       d["kube_proxy_version"] = d["status"]["node_info"]["kube_proxy_version"]
       d["kubelet_version"] = d["status"]["node_info"]["kubelet_version"]
+      d["labels"] = d["metadata"]["labels"]
       d["machine_id"] = d["status"]["node_info"]["machine_id"]
       d["operating_system"] = d["status"]["node_info"]["operating_system"]
       d["os_image"] = d["status"]["node_info"]["os_image"]
+      d["pod_cidr"] = d["spec"]["pod_cidr"]
       d["system_uuid"] = d["status"]["node_info"]["system_uuid"]
 
       return d

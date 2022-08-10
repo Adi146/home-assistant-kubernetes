@@ -42,3 +42,17 @@ class PodSensor(KubernetesEntity, SensorEntity):
     @staticmethod
     def kind() -> str:
         return KUBERNETES_KIND_POD
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        d = super().extra_state_attributes
+
+        # Add helpers for pod.
+        # Conditions
+        d["conditions"] = d["status"]["conditions"]
+
+        d["node"] = d["spec"]["node_name"]
+        d["phase"] = d["status"]["phase"]
+        d["pod_ip"] = d["status"]["pod_ip"]
+
+        return d

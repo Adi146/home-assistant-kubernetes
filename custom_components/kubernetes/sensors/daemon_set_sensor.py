@@ -63,3 +63,15 @@ class DaemonSetSensor(KubernetesEntity, SensorEntity):
             container,
             image,
         )
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        d = super().extra_state_attributes
+
+        # Add helpers for DaemonSet.
+        d["current_pods_scheduled"] = d["status"]["current_number_scheduled"]
+        d["desired_pods_scheduled"] = d["status"]["desired_number_scheduled"]
+        d["pods_available"] = d["status"]["number_available"]
+        d["pods_unavailable"] = d["status"]["number_unavailable"]
+
+        return d

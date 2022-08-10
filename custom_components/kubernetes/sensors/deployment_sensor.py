@@ -63,3 +63,17 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
             container,
             image,
         )
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        d = super().extra_state_attributes
+
+        # Add helpers for deployment.
+        d["conditions"] = d["status"]["conditions"]
+
+        d["paused"] = d["spec"]["paused"]
+        d["specified_replicas"] = d["spec"]["replicas"]
+        d["available_replicas"] = d["status"]["available_replicas"]
+        d["unavailable_replicas"] = d["status"]["unavailable_replicas"]
+
+        return d
