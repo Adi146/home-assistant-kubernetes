@@ -52,6 +52,9 @@ class PodSensor(KubernetesEntity, SensorEntity):
         # Conditions
         attr["conditions"] = data.status.conditions
 
+        # Namespace
+        attr["namespace"] = data.metadata.namespace
+
         attr["node"] = data.spec.node_name
         attr["phase"] = data.status.phase
         attr["pod_ip"] = data.status.pod_ip
