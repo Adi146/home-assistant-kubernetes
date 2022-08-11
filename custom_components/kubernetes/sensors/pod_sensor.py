@@ -11,7 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import config_validation as cv, entity_platform
 
 from ..const import DOMAIN, KUBERNETES_KIND_POD
-from ..kubernetes_entity import KubernetesEntity
+from ..kubernetes_entity import KubernetesEntity, obj_to_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class PodSensor(KubernetesEntity, SensorEntity):
 
         # Add helpers for pod.
         # Conditions
-        attr["conditions"] = super().obj_to_dict(data.status.conditions)
+        attr["conditions"] = obj_to_dict(data.status.conditions)
 
         # Namespace
         attr["namespace"] = data.metadata.namespace

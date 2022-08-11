@@ -17,7 +17,7 @@ from ..const import (
     PARAM_IMAGE,
     KUBERNETES_KIND_DEPLOYMENT,
 )
-from ..kubernetes_entity import KubernetesEntity
+from ..kubernetes_entity import KubernetesEntity, obj_to_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
         data = self.getData()
 
         # Add helpers for deployment.
-        attr["conditions"] = super().obj_to_dict(data.status.conditions)
+        attr["conditions"] = obj_to_dict(data.status.conditions)
         attr["namespace"] = data.metadata.namespace
 
         attr["paused"] = data.spec.paused
