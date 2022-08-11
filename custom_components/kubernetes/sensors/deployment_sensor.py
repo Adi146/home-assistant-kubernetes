@@ -70,7 +70,7 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
         data = self.getData()
 
         # Add helpers for deployment.
-        attr["conditions"] = attr["status"]["conditions"]
+        attr["conditions"] = data.status.conditions
         attr["namespace"] = data.metadata.namespace
 
         attr["paused"] = data.spec.paused

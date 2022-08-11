@@ -93,7 +93,8 @@ class NodeSensor(KubernetesEntity, SensorEntity):
       attr["machine_id"] = ni.machine_id
       attr["operating_system"] = ni.operating_system
       attr["os_image"] = ni.os_image
-      attr["pod_cidr"] = ni.pod_cidr
       attr["system_uuid"] = ni.system_uuid
+
+      attr["pod_cidr"] = data.spec.pod_cidr
 
       return attr
