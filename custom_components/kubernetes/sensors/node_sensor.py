@@ -73,13 +73,13 @@ class NodeSensor(KubernetesEntity, SensorEntity):
 
       # Add helpers for node.
       # Addresses
-      attr["addresses"] = data.status.addresses
+      attr["addresses"] = super().obj_to_dict(data.status.addresses)
 
       # Conditions
-      attr["conditions"] = data.status.conditions
+      attr["conditions"] = super().obj_to_dict(data.status.conditions)
 
       # Labels
-      attr["labels"] = data.metadata.labels
+      attr["labels"] = super().obj_to_dict(data.metadata.labels)
 
       # Node info
       ni = data.status.node_info

@@ -50,7 +50,7 @@ class PodSensor(KubernetesEntity, SensorEntity):
 
         # Add helpers for pod.
         # Conditions
-        attr["conditions"] = data.status.conditions
+        attr["conditions"] = super().obj_to_dict(data.status.conditions)
 
         # Namespace
         attr["namespace"] = data.metadata.namespace
