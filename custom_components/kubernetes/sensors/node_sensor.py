@@ -12,6 +12,8 @@ from homeassistant.helpers import config_validation as cv, entity_platform
 
 from ..const import (
     DOMAIN,
+    ICON_NODE_NOTOK,
+    ICON_NODE_OK,
     SERVICE_SET_UNSCHEDULABLE,
     PARAM_UNSCHEDULABLE,
     STATE_READY,
@@ -66,6 +68,9 @@ class NodeSensor(KubernetesEntity, SensorEntity):
     async def set_unschedulable(self, unschedulable: bool) -> None:
         await self.hub.set_unschedulable(self.getData().metadata.name, unschedulable)
 
+    def is_ok(self) -> bool:
+        return (self.state == "KubeletReady")
+
     @property
     def extra_state_attributes(self) -> dict:
       attr = super().extra_state_attributes
@@ -97,4 +102,13 @@ class NodeSensor(KubernetesEntity, SensorEntity):
 
       attr["pod_cidr"] = data.spec.pod_cidr
 
+      attr["ok"] = self.is_ok()
+
       return attr
+
+    @property
+    def icon(self):
+        if self.is_ok:
+            return ICON_NODE_OK
+        else:
+            return ICON_NODE_NOTOK

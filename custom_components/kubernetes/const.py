@@ -29,3 +29,12 @@ PANEL_URL = f"{URL_BASE}/panel.js"
 
 FRONTEND_PANEL_TITLE = "Kubernetes"
 FRONTEND_PANEL_ICON = "mdi:kubernetes"
+
+ICON_NODE_OK = "mdi:server-network"
+ICON_NODE_NOTOK = "mdi:server-network-off"
+ICON_DAEMONSET_OK = "mdi:checkbox-multiple-marked"
+ICON_DAEMONSET_NOTOK = "mdi:close-box-multiple"
+ICON_DEPLOYMENT_OK = "mdi:checkbox-multiple-marked"
+ICON_DEPLOYMENT_NOTOK = "mdi:close-box-multiple"
+ICON_POD_OK = "mdi:archive-outline"
+ICON_POD_NOTOK = "mdi:archive-off-outline"

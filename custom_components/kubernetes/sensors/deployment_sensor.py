@@ -12,6 +12,8 @@ from homeassistant.helpers import config_validation as cv, entity_platform
 
 from ..const import (
     DOMAIN,
+    ICON_DEPLOYMENT_NOTOK,
+    ICON_DEPLOYMENT_OK,
     SERVICE_SET_IMAGE_DEPLOYMENT,
     PARAM_CONTAINER,
     PARAM_IMAGE,
@@ -64,6 +66,13 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
             image,
         )
 
+    def is_ok(self) -> bool:
+        data = self.getData()
+        sr = data.spec.replicas
+        ar = data.status.available_replicas
+
+        return (ar == sr)
+
     @property
     def extra_state_attributes(self) -> dict:
         attr = super().extra_state_attributes
@@ -78,4 +87,13 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
         attr["available_replicas"] = data.status.available_replicas
         attr["unavailable_replicas"] = data.status.unavailable_replicas
 
+        attr["ok"] = self.is_ok()
+
         return attr
+
+    @property
+    def icon(self):
+        if self.is_ok:
+            return ICON_DEPLOYMENT_OK
+        else:
+            return ICON_DEPLOYMENT_NOTOK

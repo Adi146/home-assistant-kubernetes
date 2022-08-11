@@ -13,6 +13,8 @@ from homeassistant.helpers import config_validation as cv, entity_platform
 from ..kubernetes_entity import KubernetesEntity
 from ..const import (
     DOMAIN,
+    ICON_DAEMONSET_NOTOK,
+    ICON_DAEMONSET_OK,
     SERVICE_SET_IMAGE_DAEMONSET,
     PARAM_CONTAINER,
     PARAM_IMAGE,
@@ -64,6 +66,13 @@ class DaemonSetSensor(KubernetesEntity, SensorEntity):
             image,
         )
 
+    def is_ok(self) -> bool:
+        status = self.getData().status
+        cps = status.current_number_scheduled
+        pa = status.number_available
+
+        return (pa == cps)
+
     @property
     def extra_state_attributes(self) -> dict:
         attr = super().extra_state_attributes
@@ -77,4 +86,14 @@ class DaemonSetSensor(KubernetesEntity, SensorEntity):
         attr["pods_available"] = data.status.number_available
         attr["pods_unavailable"] = data.status.number_unavailable
 
+        attr["ok"] = self.is_ok()
+
         return attr
+
+    @property
+    def icon(self):
+        if self.is_ok:
+            return ICON_DAEMONSET_OK
+        else:
+            return ICON_DAEMONSET_NOTOK
+
