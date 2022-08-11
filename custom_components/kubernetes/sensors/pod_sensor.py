@@ -45,14 +45,15 @@ class PodSensor(KubernetesEntity, SensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict:
-        d = super().extra_state_attributes
+        attr = super().extra_state_attributes
+        data = self.getData()
 
         # Add helpers for pod.
         # Conditions
-        d["conditions"] = d["status"]["conditions"]
+        attr["conditions"] = data.status.conditions
 
-        d["node"] = d["spec"]["node_name"]
-        d["phase"] = d["status"]["phase"]
-        d["pod_ip"] = d["status"]["pod_ip"]
+        attr["node"] = data.spec.node_name
+        attr["phase"] = data.status.phase
+        attr["pod_ip"] = data.status.pod_ip
 
-        return d
+        return attr

@@ -68,27 +68,32 @@ class NodeSensor(KubernetesEntity, SensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict:
-      d = super().extra_state_attributes
+      attr = super().extra_state_attributes
+      data = self.getData()
 
       # Add helpers for node.
       # Addresses
-      d["addresses"] = d["status"]["addresses"]
+      attr["addresses"] = data.status.addresses
 
       # Conditions
-      d["conditions"] = d["status"]["conditions"]
+      attr["conditions"] = data.status.conditions
+
+      # Labels
+      attr["labels"] = data.metadata.labels
 
       # Node info
-      d["architecture"] = d["status"]["node_info"]["architecture"]
-      d["boot_id"] = d["status"]["node_info"]["boot_id"]
-      d["container_runtime_version"] = d["status"]["node_info"]["container_runtime_version"]
-      d["kernel_version"] = d["status"]["node_info"]["kernel_version"]
-      d["kube_proxy_version"] = d["status"]["node_info"]["kube_proxy_version"]
-      d["kubelet_version"] = d["status"]["node_info"]["kubelet_version"]
-      d["labels"] = d["metadata"]["labels"]
-      d["machine_id"] = d["status"]["node_info"]["machine_id"]
-      d["operating_system"] = d["status"]["node_info"]["operating_system"]
-      d["os_image"] = d["status"]["node_info"]["os_image"]
-      d["pod_cidr"] = d["spec"]["pod_cidr"]
-      d["system_uuid"] = d["status"]["node_info"]["system_uuid"]
+      ni = data.status.node_info
 
-      return d
+      attr["architecture"] = ni.architecture
+      attr["boot_id"] = ni.boot_id
+      attr["container_runtime_version"] = ni.container_runtime_version
+      attr["kernel_version"] = ni.kernel_version
+      attr["kube_proxy_version"] = ni.kube_proxy_version
+      attr["kubelet_version"] = ni.kubelet_version
+      attr["machine_id"] = ni.machine_id
+      attr["operating_system"] = ni.operating_system
+      attr["os_image"] = ni.os_image
+      attr["pod_cidr"] = ni.pod_cidr
+      attr["system_uuid"] = ni.system_uuid
+
+      return attr

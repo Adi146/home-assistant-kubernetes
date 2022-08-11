@@ -66,14 +66,16 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict:
-        d = super().extra_state_attributes
+        attr = super().extra_state_attributes
+        data = self.getData()
 
         # Add helpers for deployment.
-        d["conditions"] = d["status"]["conditions"]
+        attr["conditions"] = attr["status"]["conditions"]
+        attr["namespace"] = data.metadata.namespace
 
-        d["paused"] = d["spec"]["paused"]
-        d["specified_replicas"] = d["spec"]["replicas"]
-        d["available_replicas"] = d["status"]["available_replicas"]
-        d["unavailable_replicas"] = d["status"]["unavailable_replicas"]
+        attr["paused"] = data.spec.paused
+        attr["specified_replicas"] = data.spec.replicas
+        attr["available_replicas"] = data.status.available_replicas
+        attr["unavailable_replicas"] = data.status.unavailable_replicas
 
-        return d
+        return attr
