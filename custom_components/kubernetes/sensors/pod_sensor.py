@@ -49,7 +49,7 @@ class PodSensor(KubernetesEntity, SensorEntity):
         return KUBERNETES_KIND_POD
 
     def is_ok(self) -> bool:
-        return (self.state() == "Running")
+        return (self.state == "Running")
 
     @property
     def extra_state_attributes(self) -> dict:
