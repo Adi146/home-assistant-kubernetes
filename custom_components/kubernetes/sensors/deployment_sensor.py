@@ -53,7 +53,7 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
 
     @property
     def state(self) -> str:
-        return self.getData().status.ready_replicas
+        return self.is_ok()
 
     @staticmethod
     def kind() -> str:

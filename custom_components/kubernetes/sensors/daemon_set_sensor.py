@@ -53,7 +53,7 @@ class DaemonSetSensor(KubernetesEntity, SensorEntity):
 
     @property
     def state(self) -> str:
-        return self.getData().status.number_ready
+        return self.is_ok()
 
     @staticmethod
     def kind() -> str:
