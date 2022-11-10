@@ -12,6 +12,8 @@ from homeassistant.helpers import config_validation as cv, entity_platform
 
 from ..const import (
     DOMAIN,
+    ICON_NODE_NOTOK,
+    ICON_NODE_OK,
     SERVICE_SET_UNSCHEDULABLE,
     PARAM_UNSCHEDULABLE,
     STATE_READY,
@@ -19,7 +21,7 @@ from ..const import (
     KUBERNETES_KIND_NODE,
 )
 
-from ..kubernetes_entity import KubernetesEntity
+from ..kubernetes_entity import KubernetesEntity, obj_to_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -65,3 +67,48 @@ class NodeSensor(KubernetesEntity, SensorEntity):
 
     async def set_unschedulable(self, unschedulable: bool) -> None:
         await self.hub.set_unschedulable(self.getData().metadata.name, unschedulable)
+
+    def is_ok(self) -> bool:
+        return (self.state == "KubeletReady")
+
+    @property
+    def extra_state_attributes(self) -> dict:
+      attr = super().extra_state_attributes
+      data = self.getData()
+
+      # Add helpers for node.
+      # Addresses
+      attr["addresses"] = obj_to_dict(data.status.addresses)
+
+      # Conditions
+      attr["conditions"] = obj_to_dict(data.status.conditions)
+
+      # Labels
+      attr["labels"] = obj_to_dict(data.metadata.labels)
+
+      # Node info
+      ni = data.status.node_info
+
+      attr["architecture"] = ni.architecture
+      attr["boot_id"] = ni.boot_id
+      attr["container_runtime_version"] = ni.container_runtime_version
+      attr["kernel_version"] = ni.kernel_version
+      attr["kube_proxy_version"] = ni.kube_proxy_version
+      attr["kubelet_version"] = ni.kubelet_version
+      attr["machine_id"] = ni.machine_id
+      attr["operating_system"] = ni.operating_system
+      attr["os_image"] = ni.os_image
+      attr["system_uuid"] = ni.system_uuid
+
+      attr["pod_cidr"] = data.spec.pod_cidr
+
+      attr["ok"] = self.is_ok()
+
+      return attr
+
+    @property
+    def icon(self):
+        if self.is_ok:
+            return ICON_NODE_OK
+        else:
+            return ICON_NODE_NOTOK

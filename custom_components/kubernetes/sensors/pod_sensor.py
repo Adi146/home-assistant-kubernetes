@@ -10,8 +10,13 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import config_validation as cv, entity_platform
 
-from ..const import DOMAIN, KUBERNETES_KIND_POD
-from ..kubernetes_entity import KubernetesEntity
+from ..const import (
+    DOMAIN,
+    ICON_POD_NOTOK,
+    ICON_POD_OK,
+    KUBERNETES_KIND_POD
+)
+from ..kubernetes_entity import KubernetesEntity, obj_to_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,3 +47,33 @@ class PodSensor(KubernetesEntity, SensorEntity):
     @staticmethod
     def kind() -> str:
         return KUBERNETES_KIND_POD
+
+    def is_ok(self) -> bool:
+        return (self.state == "Running")
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        attr = super().extra_state_attributes
+        data = self.getData()
+
+        # Add helpers for pod.
+        # Conditions
+        attr["conditions"] = obj_to_dict(data.status.conditions)
+
+        # Namespace
+        attr["namespace"] = data.metadata.namespace
+
+        attr["node"] = data.spec.node_name
+        attr["phase"] = data.status.phase
+        attr["pod_ip"] = data.status.pod_ip
+
+        attr["ok"] = self.is_ok()
+
+        return attr
+
+    @property
+    def icon(self):
+        if self.is_ok:
+            return ICON_POD_OK
+        else:
+            return ICON_POD_NOTOK

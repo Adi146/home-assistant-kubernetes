@@ -12,12 +12,14 @@ from homeassistant.helpers import config_validation as cv, entity_platform
 
 from ..const import (
     DOMAIN,
+    ICON_DEPLOYMENT_NOTOK,
+    ICON_DEPLOYMENT_OK,
     SERVICE_SET_IMAGE_DEPLOYMENT,
     PARAM_CONTAINER,
     PARAM_IMAGE,
     KUBERNETES_KIND_DEPLOYMENT,
 )
-from ..kubernetes_entity import KubernetesEntity
+from ..kubernetes_entity import KubernetesEntity, obj_to_dict
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -51,7 +53,7 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
 
     @property
     def state(self) -> str:
-        return self.getData().status.ready_replicas
+        return self.is_ok()
 
     @staticmethod
     def kind() -> str:
@@ -63,3 +65,35 @@ class DeploymentSensor(KubernetesEntity, SensorEntity):
             container,
             image,
         )
+
+    def is_ok(self) -> bool:
+        data = self.getData()
+        sr = data.spec.replicas
+        ar = data.status.available_replicas
+
+        return (ar == sr)
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        attr = super().extra_state_attributes
+        data = self.getData()
+
+        # Add helpers for deployment.
+        attr["conditions"] = obj_to_dict(data.status.conditions)
+        attr["namespace"] = data.metadata.namespace
+
+        attr["paused"] = data.spec.paused
+        attr["specified_replicas"] = data.spec.replicas
+        attr["available_replicas"] = data.status.available_replicas
+        attr["unavailable_replicas"] = data.status.unavailable_replicas
+
+        attr["ok"] = self.is_ok()
+
+        return attr
+
+    @property
+    def icon(self):
+        if self.is_ok:
+            return ICON_DEPLOYMENT_OK
+        else:
+            return ICON_DEPLOYMENT_NOTOK
