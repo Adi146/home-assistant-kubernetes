@@ -64,4 +64,8 @@ class KubernetesEntity(Entity):
 
     @property
     def extra_state_attributes(self) -> dict:
-        return { "raw" : obj_to_dict(self.getData()) }
+        data = obj_to_dict(self.getData())
+        attr = { "raw" : data }
+        attr["device_class"] = data.kind
+        return attr
+   
